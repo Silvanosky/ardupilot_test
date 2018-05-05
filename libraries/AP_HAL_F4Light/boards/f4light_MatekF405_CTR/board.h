@@ -163,7 +163,6 @@
 # define HAL_BATT_VOLT_SCALE    10.1
 # define HAL_BATT_CURR_SCALE    17
 
-
 #define BOARD_USB_DMINUS 108
 
 //#define BOARD_SBUS_INVERTER     
