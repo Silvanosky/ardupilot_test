@@ -605,6 +605,10 @@ void AP_Baro::init(void)
  #ifdef HAL_BARO_BMP280_BUS
     ADD_BACKEND(AP_Baro_BMP280::probe(*this,
                                           std::move(hal.i2c_mgr->get_device(HAL_BARO_BMP280_BUS, HAL_BARO_BMP280_I2C_ADDR))));
+  #ifdef HAL_BARO_BMP280_I2C_ADDR_ALT
+    ADD_BACKEND(AP_Baro_BMP280::probe(*this,
+                                          std::move(hal.i2c_mgr->get_device(HAL_BARO_BMP280_BUS, HAL_BARO_BMP280_I2C_ADDR_ALT))));
+  #endif
  #endif
 
  #ifdef HAL_BARO_BMP085_BUS
