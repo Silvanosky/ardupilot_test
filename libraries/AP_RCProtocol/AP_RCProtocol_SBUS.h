@@ -21,7 +21,8 @@
 
 class AP_RCProtocol_SBUS : public AP_RCProtocol_Backend {
 public:
-    AP_RCProtocol_SBUS(AP_RCProtocol &_frontend) : AP_RCProtocol_Backend(_frontend) {}
+    AP_RCProtocol_SBUS(AP_RCProtocol &_frontend, bool _inverted) :
+        AP_RCProtocol_Backend(_frontend), inverted(_inverted) {}
     void process_pulse(uint32_t width_s0, uint32_t width_s1) override;
 private:
     bool sbus_decode(const uint8_t frame[25], uint16_t *values, uint16_t *num_values,
@@ -30,4 +31,5 @@ private:
         uint16_t bytes[25]; // including start bit, parity and stop bits
         uint16_t bit_ofs;
     } sbus_state;
+    bool inverted;
 };

@@ -23,7 +23,8 @@
 void AP_RCProtocol::init()
 {
     backend[AP_RCProtocol::PPM] = new AP_RCProtocol_PPMSum(*this);
-    backend[AP_RCProtocol::SBUS] = new AP_RCProtocol_SBUS(*this);
+    backend[AP_RCProtocol::SBUS] = new AP_RCProtocol_SBUS(*this, true);
+    backend[AP_RCProtocol::SBUS_NI] = new AP_RCProtocol_SBUS(*this, false);
     backend[AP_RCProtocol::DSM] = new AP_RCProtocol_DSM(*this);
 }
 

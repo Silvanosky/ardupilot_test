@@ -241,7 +241,10 @@ void AP_RCProtocol_SBUS::process_pulse(uint32_t width_s0, uint32_t width_s1)
         uint8_t i;
         for (i=0; i<25; i++) {
             // get inverted data
-            uint16_t v = ~sbus_state.bytes[i];
+            uint16_t v = sbus_state.bytes[i];
+            if(inverted) {
+                v=~v;
+            }
             // check start bit
             if ((v & 1) != 0) {
                 goto reset;
