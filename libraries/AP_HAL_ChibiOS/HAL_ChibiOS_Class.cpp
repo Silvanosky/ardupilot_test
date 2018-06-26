@@ -78,11 +78,13 @@ HAL_UART_IO_DRIVER;
 AP_IOMCU iomcu(uart_io);
 #endif
 
+Empty::UARTDriver eud;
+
 HAL_ChibiOS::HAL_ChibiOS() :
     AP_HAL::HAL(
         &uartADriver,
         &uartBDriver,
-        &uartCDriver,
+        &eud,
         &uartDDriver,
         &uartEDriver,
         &uartFDriver,
@@ -90,7 +92,7 @@ HAL_ChibiOS::HAL_ChibiOS() :
         &spiDeviceManager,
         &analogIn,
         &storageDriver,
-        &uartADriver,
+        &uartCDriver,
         &gpioDriver,
         &rcinDriver,
         &rcoutDriver,
@@ -152,7 +154,8 @@ static THD_FUNCTION(main_loop,arg)
     sdcard_init();
 
     hal.uartB->begin(38400);
-    hal.uartC->begin(57600);
+    hal.uartC->begin(115200);
+    hal.console->begin(115200);
     hal.analogin->init();
     hal.scheduler->init();
 
