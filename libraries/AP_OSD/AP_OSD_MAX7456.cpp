@@ -342,8 +342,11 @@ void AP_OSD_MAX7456::flush()
 
 void AP_OSD_MAX7456::transfer_frame()
 {
-    int updated_chars = 0;
+    uint16_t updated_chars = 0;
+    //force update position and attribute on first char
+    uint16_t last_position = UINT16_MAX - 1;
     uint8_t last_attribute = 0xFF;
+    bool first_update = true;
     if (!initialized) {
         return;
     }
@@ -362,20 +365,32 @@ void AP_OSD_MAX7456::transfer_frame()
             shadow_attr[y][x] = attr[y][x];
             uint8_t attribute = attr[y][x] & (DMM_BLINK | DMM_INVERT_PIXEL_COLOR);
             uint8_t chr = frame[y][x];
+            uint16_t pos = y * video_columns + x;
+            
+            if(pos != last_position + 1) {
+                //exit autoincrement mode
+                if(!first_update) {
+                    buffer_add_cmd(MAX7456ADD_DMDI, 0xFF);
+                    first_update = false;
+                }
+                buffer_add_cmd(MAX7456ADD_DMAH, pos >> 8);
+                buffer_add_cmd(MAX7456ADD_DMAL, pos & 0xFF);
+            }
 
-            if (attribute != last_attribute) {
-                buffer_add_cmd(MAX7456ADD_DMM, attribute);
+            if ( (attribute != last_attribute) || (pos != last_position + 1) ) {
+                buffer_add_cmd(MAX7456ADD_DMM, attribute | DMM_AUTOINCREMENT);
                 last_attribute = attribute;
             }
-            uint16_t pos = y * video_columns + x;
-            buffer_add_cmd(MAX7456ADD_DMAH, pos >> 8);
-            buffer_add_cmd(MAX7456ADD_DMAL, pos & 0xFF);
+            
             buffer_add_cmd(MAX7456ADD_DMDI, chr);
             updated_chars++;
+            last_position = pos;
         }
     }
 
     if (buffer_offset > 0) {
+        buffer_add_cmd(MAX7456ADD_DMDI, 0xFF);
+        buffer_add_cmd(MAX7456ADD_DMM, 0);
         _dev->get_semaphore()->take_blocking();
         _dev->transfer(buffer, buffer_offset, nullptr, 0);
         _dev->get_semaphore()->give();
