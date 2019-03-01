@@ -174,6 +174,7 @@ class Board:
                 '-fcolor-diagnostics',
 
                 '-Werror=inconsistent-missing-override',
+                '-Werror=overloaded-virtual',
 
                 '-Wno-gnu-designator',
                 '-Wno-mismatched-tags',
