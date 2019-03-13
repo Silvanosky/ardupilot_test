@@ -45,9 +45,6 @@ public:
                 max_pwm = _esc_pwm_max;
                 return true;
         }
-
-
-
 //    float scale_esc_to_unity(uint16_t pwm) override;
 //    bool enable_px4io_sbus_out(uint16_t rate_hz) override;
 //    void timer_tick(void) override;
@@ -85,5 +82,4 @@ private:
     uint16_t period[max_channels];
     uint16_t last_sent[max_channels];
     uint16_t safe_pwm[max_channels];
-
 };

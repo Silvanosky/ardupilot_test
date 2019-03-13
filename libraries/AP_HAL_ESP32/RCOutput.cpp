@@ -1,4 +1,6 @@
 #include "RCOutput.h"
+
+#include <AP_HAL/AP_HAL.h>
 #include <AP_IOMCU/AP_IOMCU.h>
 
 #define LIST_GROUP 0
@@ -136,22 +138,6 @@ uint16_t RCOutput::read(uint8_t chan) {
     if (chan >= max_channels)
 	return 0;
     return period[chan];
-}
-
-void RCOutput::read(uint16_t *period_us, uint8_t len)
-{
-        if (len > max_channels) {
-                len = max_channels;
-        }
-
-        if (len <= chan_offset) {
-                return;
-        }
-
-        len -= chan_offset;
-        period_us += chan_offset;
-
-        memcpy(period_us, period, len * sizeof(uint16_t));
 }
 
 uint16_t RCOutput::read_last_sent(uint8_t chan) {
