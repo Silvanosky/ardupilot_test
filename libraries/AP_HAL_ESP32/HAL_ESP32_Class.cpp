@@ -24,6 +24,7 @@
 #include "UARTDriver.h"
 #include "WiFiDriver.h"
 #include "Storage.h"
+#include "RCOutput.h"
 
 static ESP32::UARTDriver cons(0);
 static Empty::UARTDriver uartADriver;

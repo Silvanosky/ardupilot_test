@@ -47,6 +47,7 @@ public:
         }
 
 
+
 //    float scale_esc_to_unity(uint16_t pwm) override;
 //    bool enable_px4io_sbus_out(uint16_t rate_hz) override;
 //    void timer_tick(void) override;
@@ -60,31 +61,29 @@ public:
 
 
 private:
-        struct pwm_out {
-                int gpio_num;
-                mcpwm_unit_t unit_num;
-                mcpwm_timer_t timer_num;
-                mcpwm_io_signals_t io_signal;
-                mcpwm_operator_t op;
-                uint8_t chan;
-        };
+    struct pwm_out {
+	int gpio_num;
+	mcpwm_unit_t unit_num;
+	mcpwm_timer_t timer_num;
+	mcpwm_io_signals_t io_signal;
+	mcpwm_operator_t op;
+	uint8_t chan;
+};
 
-        struct pwm_group {
-                pwm_out out_list[4];
-                enum output_mode current_mode;
-                uint16_t ch_mask;
-        };
+    struct pwm_group {
+	pwm_out out_list[4];
+	enum output_mode current_mode;
+	uint16_t ch_mask;
+    };
 
-        static pwm_group pwm_group_list[];
-        bool corked;
-        static const uint8_t max_channels = 12;
-        AP_HAL::Util::safety_state safety_state;
-        uint16_t _esc_pwm_min;
-        uint16_t _esc_pwm_max;
-        uint16_t period[max_channels];
-        uint16_t last_sent[max_channels];
-        uint16_t safe_pwm[max_channels];
-
-        uint8_t chan_offset;
+    static pwm_group pwm_group_list[];
+    bool corked;
+    static const uint8_t max_channels = 12;
+    AP_HAL::Util::safety_state safety_state;
+    uint16_t _esc_pwm_min;
+    uint16_t _esc_pwm_max;
+    uint16_t period[max_channels];
+    uint16_t last_sent[max_channels];
+    uint16_t safe_pwm[max_channels];
 
 };
