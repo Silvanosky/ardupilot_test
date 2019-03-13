@@ -7,6 +7,7 @@
 #include "SPIDevice.h"
 #include "UARTDriver.h"
 #include "WiFiDriver.h"
+#include "RCOutput.h"
 
 static ESP32::UARTDriver cons(0);
 static Empty::UARTDriver uartADriver;
@@ -22,7 +23,7 @@ static Empty::AnalogIn analogIn;
 static Empty::Storage storageDriver;
 static Empty::GPIO gpioDriver;
 static Empty::RCInput rcinDriver;
-static Empty::RCOutput rcoutDriver;
+static ESP32::RCOutput rcoutDriver;
 static ESP32::Scheduler schedulerInstance;
 static Empty::Util utilInstance;
 static Empty::OpticalFlow opticalFlowDriver;
