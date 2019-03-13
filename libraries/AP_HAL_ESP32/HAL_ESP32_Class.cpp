@@ -5,6 +5,7 @@
 #include "HAL_ESP32_Class.h"
 #include "Scheduler.h"
 #include "SPIDevice.h"
+#include "I2CDevice.h"
 #include "UARTDriver.h"
 #include "WiFiDriver.h"
 #include "RCOutput.h"
@@ -17,7 +18,7 @@ static Empty::UARTDriver uartDDriver;
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;
 static Empty::UARTDriver uartGDriver;
-static Empty::I2CDeviceManager i2cDeviceManager;
+static ESP32::I2CDeviceManager i2cDeviceManager;
 static ESP32::SPIDeviceManager spiDeviceManager;
 static Empty::AnalogIn analogIn;
 static Empty::Storage storageDriver;
