@@ -21,10 +21,11 @@ class I2CBus : public DeviceBus
 {
 public:
         I2CBus();
+        ~I2CBus();
 
-	void init();
+        void init();
 
-	i2c_config_t cfg;
+        i2c_config_t cfg;
         uint8_t bus;
 };
 
@@ -114,11 +115,24 @@ public:
                         bool use_smbus = false,
                         uint32_t timeout_ms = 4) override;
 
+        /*
+          get mask of bus numbers for all configured I2C buses
+         */
+        uint32_t get_bus_mask(void) const override;
+
+        /*
+          get mask of bus numbers for all configured external I2C buses
+         */
+        uint32_t get_bus_mask_external(void) const override;
+
+        /*
+          get mask of bus numbers for all configured internal I2C buses
+         */
+        uint32_t get_bus_mask_internal(void) const override;
 
 
 private:
-	static I2CBus businfo[];
-        I2CBus *buses;
+        static I2CBus businfo[];
 
 };
 }
