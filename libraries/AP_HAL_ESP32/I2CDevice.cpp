@@ -63,8 +63,8 @@ I2CDevice::~I2CDevice()
     free(pname);
 }
 
-bool I2CDevice::transfer(const uint8_t *send, uint32_t send_len,
-                         uint8_t *recv, uint32_t recv_len)
+
+static void disp_buf(const uint8_t *buf, const int len)
 {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     if( send_len != 0 && send != nullptr ) {
@@ -138,4 +138,30 @@ uint32_t I2CDeviceManager::get_bus_mask_internal(void) const
 uint32_t I2CDeviceManager::get_bus_mask_external(void) const
 {
     return get_bus_mask() & ~HAL_I2C_INTERNAL_MASK;
+}
+
+/*
+  get mask of bus numbers for all configured I2C buses
+*/
+uint32_t I2CDeviceManager::get_bus_mask(void) const
+{
+        return ((1U << ARRAY_SIZE(I2CD)) - 1) << HAL_I2C_BUS_BASE;
+}
+
+/*
+  get mask of bus numbers for all configured internal I2C buses
+*/
+uint32_t I2CDeviceManager::get_bus_mask_internal(void) const
+{
+        // assume first bus is internal
+        return get_bus_mask() & HAL_I2C_INTERNAL_MASK;
+}
+
+/*
+  get mask of bus numbers for all configured external I2C buses
+*/
+uint32_t I2CDeviceManager::get_bus_mask_external(void) const
+{
+        // assume first bus is internal
+        return get_bus_mask() & ~HAL_I2C_INTERNAL_MASK;
 }
