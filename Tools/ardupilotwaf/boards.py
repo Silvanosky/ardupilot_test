@@ -90,6 +90,7 @@ class Board:
             '-Werror=return-type',
             '-Werror=unused-result',
             '-Werror=narrowing',
+            '-Werror=attributes',
         ]
 
         if cfg.options.enable_scripting:
@@ -155,6 +156,7 @@ class Board:
             '-Wno-reorder',
             '-Wno-redundant-decls',
             '-Wno-unknown-pragmas',
+            '-Werror=attributes',
             '-Werror=format-security',
             '-Werror=enum-compare',
             '-Werror=array-bounds',
