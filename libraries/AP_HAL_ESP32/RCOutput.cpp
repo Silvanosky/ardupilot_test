@@ -1,7 +1,6 @@
 #include "RCOutput.h"
 
 #include <AP_HAL/AP_HAL.h>
-#include <AP_IOMCU/AP_IOMCU.h>
 
 #define LIST_GROUP 0
 #define NUM_GROUPS ARRAY_SIZE(pwm_group_list)
@@ -61,7 +60,7 @@ uint16_t RCOutput::get_freq(uint8_t chan) {
 	pwm_group &group = pwm_group_list[i];
 	for (uint8_t j = 0; j < 4; j++) {
 	    pwm_out &out = group.out_list[j];
-	    if (out.chan == chan) 
+	    if (out.chan == chan)
 		return mcpwm_get_frequency(out.unit_num, out.timer_num);
 	}
     }
@@ -73,7 +72,7 @@ void RCOutput::enable_ch(uint8_t chan) {
 	pwm_group &group = pwm_group_list[i];
 	for (uint8_t j = 0; j < 4; j++) {
 	    pwm_out &out = group.out_list[j];
-	    if (out.chan == chan)          
+	    if (out.chan == chan)
 		mcpwm_start(out.unit_num, out.timer_num);
 	}
     }
@@ -98,7 +97,7 @@ void RCOutput::write(uint8_t chan, uint16_t period_us) {
 	period_us = safe_pwm[chan];
     period[chan] = period_us;
 
-    if (!corked) 
+    if (!corked)
 	push();
 //    mcpwm_set_duty_in_us(mcpwm.unit, mcpwm.timer, mcpwm.op, period_us);
 }
@@ -147,7 +146,7 @@ uint16_t RCOutput::read_last_sent(uint8_t chan) {
 }
 
 void RCOutput::read_last_sent(uint16_t* period_us, uint8_t len) {
-    if (len > max_channels) 
+    if (len > max_channels)
 	len = max_channels;
     for (uint8_t i=0; i<len; i++) {
 	period_us[i] = read_last_sent(i);

@@ -3,6 +3,8 @@
 #include <AP_HAL/RCOutput.h>
 #include "HAL_ESP32_Namespace.h"
 #include "driver/mcpwm.h"
+
+#define HAL_PARAM_DEFAULTS_PATH nullptr
 #include <AP_HAL/Util.h>
 
 class ESP32::RCOutput : public AP_HAL::RCOutput
