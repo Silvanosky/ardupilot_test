@@ -1,7 +1,6 @@
 #include "RCOutput.h"
 
 #include <AP_HAL/AP_HAL.h>
-#include <AP_IOMCU/AP_IOMCU.h>
 
 #define LIST_GROUP 0
 #define NUM_GROUPS ARRAY_SIZE(pwm_group_list)
