@@ -82,4 +82,6 @@ private:
     uint16_t period[max_channels];
     uint16_t last_sent[max_channels];
     uint16_t safe_pwm[max_channels];
+
+    uint8_t chan_offset;
 };
