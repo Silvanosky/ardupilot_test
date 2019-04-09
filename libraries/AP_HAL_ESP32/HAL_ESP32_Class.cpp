@@ -27,6 +27,7 @@
 #include "RCOutput.h"
 #include "Storage.h"
 #include "RCOutput.h"
+#include "Util.h"
 
 static ESP32::UARTDriver cons(0);
 static Empty::UARTDriver uartADriver;
@@ -44,7 +45,7 @@ static Empty::GPIO gpioDriver;
 static Empty::RCInput rcinDriver;
 static ESP32::RCOutput rcoutDriver;
 static ESP32::Scheduler schedulerInstance;
-static Empty::Util utilInstance;
+static ESP32::Util utilInstance;
 static Empty::OpticalFlow opticalFlowDriver;
 
 extern const AP_HAL::HAL& hal;
