@@ -16,7 +16,11 @@
 #include <AP_HAL_ESP32/UARTDriver.h>
 #include <AP_Math/AP_Math.h>
 
+#include "esp_log.h"
+
 using namespace ESP32;
+
+static const char* TAG = "UART";
 
 UARTDriver::UARTDriver(uint8_t serial_num)
 {
@@ -26,12 +30,13 @@ UARTDriver::UARTDriver(uint8_t serial_num)
         rx_pin = 3;
         tx_pin = 1;
     } else if (serial_num == 1) {
-        rx_pin = 34;
+        rx_pin = 14;
         tx_pin = 32;
     } else if (serial_num == 2) {
         rx_pin = 35;
         tx_pin = 33;
     }
+    ESP_LOGI(TAG, "Create uart: rx: %d, tx: %d", rx_pin, tx_pin);
 }
 
 void UARTDriver::begin(uint32_t b)
@@ -50,7 +55,7 @@ void UARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
             .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
         };
         uart_param_config(uart_num, &config);
-        uart_set_pin(uart_num,tx_pin,rx_pin,
+        uart_set_pin(uart_num, tx_pin,rx_pin,
                      UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
         uart_driver_install(uart_num, 2*UART_FIFO_LEN, 0, 0, nullptr, 0);
         _readbuf.set_size(RX_BUF_SIZE);
@@ -59,6 +64,7 @@ void UARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
     } else {
         uart_set_baudrate(uart_num, b);
     }
+    ESP_LOGI(TAG, "Start uart on: rx: %d, tx: %d, baudrate: %d", rx_pin, tx_pin, b);
 }
 
 void UARTDriver::end()
