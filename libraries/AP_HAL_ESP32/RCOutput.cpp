@@ -69,7 +69,7 @@ void RCOutput::init()
 
 
 	   	// list of 6 pins we'll be using for PWM out:
-		int myints[] = {33,32,21,22,25,27};
+		int myints[] = {19,16,17,21,0,0};
 		// 0A,0B,1A,1B,2A,2B timers, signals and operators.
 		mcpwm_timer_t mytimers[] = {MCPWM_TIMER_0,MCPWM_TIMER_0,MCPWM_TIMER_1,MCPWM_TIMER_1,MCPWM_TIMER_2,MCPWM_TIMER_2};
 		mcpwm_io_signals_t mysignals[] = {MCPWM0A,MCPWM0B,MCPWM1A,MCPWM1B,MCPWM2A,MCPWM2B};
@@ -85,6 +85,52 @@ void RCOutput::init()
 			   out.chan =  i ; // 0 = CH_1; // see AP_HAL/RCOutput.h, so 0-5 is CH1,CH2,CH3,CH4,CH5,CH6
 			   pwm_group_list[0].out_list[i] = out;
 		}
+			  //max of first 6 pwm's in the first MCPWM_UNIT_0
+
+			 	    printf("initializing mcpwm gpio...\n");
+			 		#define GPIO_PWM0A_OUT 19   //Set GPIO as PWM0A - whatever is defined in this slot no worky
+			 		#define GPIO_PWM0B_OUT 16   //Set GPIO as PWM0B
+			 		#define GPIO_PWM1A_OUT 0   //Set GPIO as PWM1A
+			 		#define GPIO_PWM1B_OUT 0  //Set GPIO as PWM1B
+			 		#define GPIO_PWM2A_OUT 0   //Set GPIO as PWM2A
+			 		#define GPIO_PWM2B_OUT 0   //Set GPIO as PWM2B
+			 	    mcpwm_pin_config_t pin_config = {
+			 	        .mcpwm0a_out_num = GPIO_PWM0A_OUT,
+			 	        .mcpwm0b_out_num = GPIO_PWM0B_OUT,
+			 	        .mcpwm1a_out_num = GPIO_PWM1A_OUT,
+			 	        .mcpwm1b_out_num = GPIO_PWM1B_OUT,
+			 	        .mcpwm2a_out_num = GPIO_PWM2A_OUT,
+			 	        .mcpwm2b_out_num = GPIO_PWM2B_OUT
+			 	    };
+			 	    mcpwm_set_pin(MCPWM_UNIT_0, &pin_config);
+			 
+			 
+			 	    //2. initialize mcpwm configuration
+			 	    printf("Configuring Initial Parameters of mcpwm at 400Hz...\n");
+			 	    mcpwm_config_t pwm_config;
+			 	    pwm_config.frequency = 400;    //frequency = 1000Hz
+			 	    pwm_config.cmpr_a = 60.0;       //duty cycle of PWMxA = 60.0%
+			 	    pwm_config.cmpr_b = 50.0;       //duty cycle of PWMxb = 50.0%
+			 	    pwm_config.counter_mode = MCPWM_UP_COUNTER;
+			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1; // 1 Active low duty,  i.e. duty cycle proportional to low  time for asymmetric MCPWM
+			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);   //Configure PWM0A & PWM0B with above settings
+			 
+			 	    pwm_config.frequency = 400;     //frequency = 500Hz
+			 	    pwm_config.cmpr_a = 45.9;       //duty cycle of PWMxA = 45.9%
+			 	    pwm_config.cmpr_b = 7.0;    //duty cycle of PWMxb = 07.0%
+			 	    pwm_config.counter_mode = MCPWM_UP_COUNTER;
+			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
+			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);   //Configure PWM1A & PWM1B with above settings
+			 
+			 	    pwm_config.frequency = 400;     //frequency = 400Hz
+			 	    pwm_config.cmpr_a = 23.2;       //duty cycle of PWMxA = 23.2%
+			 	    pwm_config.cmpr_b = 97.0;       //duty cycle of PWMxb = 97.0%
+			 	    pwm_config.counter_mode = MCPWM_DOWN_COUNTER;
+			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
+			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);   //Configure PWM2A & PWM2B with above settings
+
+		safe_pwm[0] = 1600;
+		safe_pwm[1] = 1400;
 
         for (uint8_t i = 0; i < NUM_GROUPS; i++ ) {
                 pwm_group &group = pwm_group_list[i];
