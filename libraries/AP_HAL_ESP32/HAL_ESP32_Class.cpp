@@ -29,10 +29,10 @@
 #include "RCOutput.h"
 #include "Util.h"
 
-static ESP32::UARTDriver cons(0);
+static Empty::UARTDriver cons;
 static Empty::UARTDriver uartADriver;
 static Empty::UARTDriver uartBDriver;
-static ESP32::WiFiDriver uartCDriver;
+static ESP32::UARTDriver uartCDriver(0);
 static Empty::UARTDriver uartDDriver;
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;
