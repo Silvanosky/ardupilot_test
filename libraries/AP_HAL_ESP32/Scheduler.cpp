@@ -36,6 +36,7 @@ void Scheduler::init()
     xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
     xTaskCreate(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle);
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
+    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
     xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle);
 }
 
@@ -179,6 +180,27 @@ void Scheduler::_rcin_thread(void *arg)
     }
 }
 
+void Scheduler::test_esc(void* arg)
+{
+    Scheduler *sched = (Scheduler *)arg;
+    long i = 0;
+    while (i < 2500)
+    {
+	hal.rcout->write(0, 1600);
+	sched->delay_microseconds(1000);
+	i++;
+    }
+    sched->delay_microseconds(50000);
+
+    long n = 0;
+    while (n < 5000)
+    {
+	hal.rcout->write(0, 1900);
+	sched->delay_microseconds(1000);
+	n++;
+    }
+}
+
 void Scheduler::_run_io(void)
 {
     if (_in_io_proc) {
@@ -261,13 +283,14 @@ void Scheduler::_main_thread(void *arg)
     hal.uartB->begin(38400);
     hal.uartC->begin(57600);
     hal.analogin->init();
+    hal.rcout->init();
 
     sched->callbacks->setup();
     sched->system_initialized();
 
     while (true) {
         sched->callbacks->loop();
-        sched->delay_microseconds(1);
+        sched->delay_microseconds(250);
         //print_stats();
     }
 }

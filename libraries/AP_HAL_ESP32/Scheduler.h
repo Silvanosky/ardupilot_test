@@ -74,11 +74,14 @@ private:
 
     static bool _initialized;
 
+
+
     void *_main_task_handle;
     void *_timer_task_handle;
     void *_rcin_task_handle;
     void *_uart_task_handle;
     void *_io_task_handle;
+    void *test_task_handle;
     void *_storage_task_handle;
 
     static void _main_thread(void *arg);
@@ -87,6 +90,8 @@ private:
     static void _uart_thread(void *arg);
     static void _io_thread(void *arg);
     static void _storage_thread(void *arg);
+
+    static void test_esc(void* arg);
 
     bool _in_timer_proc;
     void _run_timers();

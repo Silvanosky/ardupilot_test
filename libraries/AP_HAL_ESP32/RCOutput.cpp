@@ -69,7 +69,7 @@ void RCOutput::init()
 
 
 	   	// list of 6 pins we'll be using for PWM out:
-		int myints[] = {19,16,17,21,0,0};
+		int myints[] = {19,16,0,0,0,0};
 		// 0A,0B,1A,1B,2A,2B timers, signals and operators.
 		mcpwm_timer_t mytimers[] = {MCPWM_TIMER_0,MCPWM_TIMER_0,MCPWM_TIMER_1,MCPWM_TIMER_1,MCPWM_TIMER_2,MCPWM_TIMER_2};
 		mcpwm_io_signals_t mysignals[] = {MCPWM0A,MCPWM0B,MCPWM1A,MCPWM1B,MCPWM2A,MCPWM2B};
@@ -129,9 +129,6 @@ void RCOutput::init()
 			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
 			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);   //Configure PWM2A & PWM2B with above settings
 
-		safe_pwm[0] = 1600;
-		safe_pwm[1] = 1400;
-
         for (uint8_t i = 0; i < NUM_GROUPS; i++ ) {
                 pwm_group &group = pwm_group_list[i];
                 group.current_mode = MODE_PWM_NORMAL;
@@ -157,6 +154,7 @@ void RCOutput::init()
 #ifdef HAL_GPIO_PIN_SAFETY_IN
         safety_state = AP_HAL::Util::SAFETY_DISARMED;
 #endif
+
 
 }
 
