@@ -18,6 +18,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "esp_log.h"
+
 using namespace ESP32;
 
 extern const AP_HAL::HAL& hal;
@@ -180,24 +182,31 @@ void Scheduler::_rcin_thread(void *arg)
     }
 }
 
+
+static const char* TAG = "MOTOR";
+
 void Scheduler::test_esc(void* arg)
 {
     Scheduler *sched = (Scheduler *)arg;
-    long i = 0;
-    while (i < 2500)
+    for (long i = 0; i < 5000; ++i)
     {
 	hal.rcout->write(0, 1600);
 	sched->delay_microseconds(1000);
-	i++;
     }
-    sched->delay_microseconds(50000);
+    sched->delay(500);
 
     long n = 0;
-    while (n < 5000)
+    int v = 1;
+    while (true)
     {
-	hal.rcout->write(0, 1900);
-	sched->delay_microseconds(1000);
-	n++;
+	hal.rcout->write(0, 1600 + n);
+	sched->delay(100);
+	n += v;
+	if (n > 300)
+	    v = -1;
+	if (n < 10)
+	    v = 1;
+	ESP_LOGI(TAG, "PWM value: %d", 1600 + n);
     }
 }
 
