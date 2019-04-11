@@ -55,107 +55,127 @@ static uint32_t servo_per_degree_init(uint32_t degree_of_rotation)
 
 void RCOutput::init()
 {
-	   printf("RCOutput::init()\n");
+	printf("RCOutput::init()\n");
 
-	   	// configure all 6 GPIOs the same at the same time... as OUTPUTS
-		#define GPIO_BIT_MASK  ((1ULL<<GPIO_NUM_21) | (1ULL<<GPIO_NUM_22) | (1ULL<<GPIO_NUM_25) | (1ULL<<GPIO_NUM_27) | (1ULL<<GPIO_NUM_32) | (1ULL<<GPIO_NUM_33))
-		gpio_config_t io_conf;
-		io_conf.intr_type = GPIO_INTR_DISABLE;
-		io_conf.mode = GPIO_MODE_OUTPUT;
-		io_conf.pin_bit_mask = GPIO_BIT_MASK;
-		io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-		io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-		gpio_config(&io_conf);
+	// configure all 6 GPIOs the same at the same time... as OUTPUTS
+#define GPIO_BIT_MASK  ((1ULL<<GPIO_NUM_19) | (1ULL<<GPIO_NUM_16) | (1ULL<<GPIO_NUM_17) | (1ULL<<GPIO_NUM_21))
+	gpio_config_t io_conf;
+	io_conf.intr_type = GPIO_INTR_DISABLE;
+	io_conf.mode = GPIO_MODE_OUTPUT;
+	io_conf.pin_bit_mask = GPIO_BIT_MASK;
+	io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+	io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+	gpio_config(&io_conf);
 
 
-	   	// list of 6 pins we'll be using for PWM out:
-		int myints[] = {19,16,0,0,0,0};
-		// 0A,0B,1A,1B,2A,2B timers, signals and operators.
-		mcpwm_timer_t mytimers[] = {MCPWM_TIMER_0,MCPWM_TIMER_0,MCPWM_TIMER_1,MCPWM_TIMER_1,MCPWM_TIMER_2,MCPWM_TIMER_2};
-		mcpwm_io_signals_t mysignals[] = {MCPWM0A,MCPWM0B,MCPWM1A,MCPWM1B,MCPWM2A,MCPWM2B};
-		mcpwm_operator_t myops[] = {MCPWM_OPR_A,MCPWM_OPR_B,MCPWM_OPR_A,MCPWM_OPR_B,MCPWM_OPR_A,MCPWM_OPR_B};
-		// setup all the timers and signals etc
-		for ( int i = 0 ; i < 6; i++) {
-			   pwm_out out;
-			   out.gpio_num = myints[i];
-			   out.unit_num = MCPWM_UNIT_0;
-			   out.timer_num = mytimers[i];
-			   out.io_signal = mysignals[i];
-			   out.op = myops[i];  // MCPWM_OPR_A = 0
-			   out.chan =  i ; // 0 = CH_1; // see AP_HAL/RCOutput.h, so 0-5 is CH1,CH2,CH3,CH4,CH5,CH6
-			   pwm_group_list[0].out_list[i] = out;
+	// list of 6 pins we'll be using for PWM out:
+	int myints[] = {19,16,17,21};
+	// 0A,0B,1A,1B,2A,2B timers, signals and operators.
+	mcpwm_timer_t mytimers[] = {
+		MCPWM_TIMER_0,
+		MCPWM_TIMER_0,
+		MCPWM_TIMER_1,
+		MCPWM_TIMER_1,
+		//MCPWM_TIMER_2,
+		//MCPWM_TIMER_2
+	};
+	mcpwm_io_signals_t mysignals[] = {
+		MCPWM0A,
+		MCPWM0B,
+		MCPWM1A,
+		MCPWM1B,
+		//MCPWM2A,
+		//MCPWM2B
+	};
+	mcpwm_operator_t myops[] = {
+		MCPWM_OPR_A,
+		MCPWM_OPR_B,
+		MCPWM_OPR_A,
+		MCPWM_OPR_B,
+		//MCPWM_OPR_A,
+		//MCPWM_OPR_B
+	};
+	// setup all the timers and signals etc
+	for ( int i = 0 ; i < 4; i++) {
+		pwm_out out;
+		out.gpio_num = myints[i];
+		out.unit_num = MCPWM_UNIT_0;
+		out.timer_num = mytimers[i];
+		out.io_signal = mysignals[i];
+		out.op = myops[i];  // MCPWM_OPR_A = 0
+		out.chan =  i ; // 0 = CH_1; // see AP_HAL/RCOutput.h, so 0-5 is CH1,CH2,CH3,CH4,CH5,CH6
+		pwm_group_list[0].out_list[i] = out;
+	}
+	//max of first 6 pwm's in the first MCPWM_UNIT_0
+
+	printf("initializing mcpwm gpio...\n");
+#define GPIO_PWM0A_OUT 19   //Set GPIO as PWM0A - whatever is defined in this slot no worky
+#define GPIO_PWM0B_OUT 16   //Set GPIO as PWM0B
+#define GPIO_PWM1A_OUT 17   //Set GPIO as PWM1A
+#define GPIO_PWM1B_OUT 21  //Set GPIO as PWM1B
+#define GPIO_PWM2A_OUT 0   //Set GPIO as PWM2A
+#define GPIO_PWM2B_OUT 0   //Set GPIO as PWM2B
+	mcpwm_pin_config_t pin_config = {
+		.mcpwm0a_out_num = GPIO_PWM0A_OUT,
+		.mcpwm0b_out_num = GPIO_PWM0B_OUT,
+		.mcpwm1a_out_num = GPIO_PWM1A_OUT,
+		.mcpwm1b_out_num = GPIO_PWM1B_OUT,
+		.mcpwm2a_out_num = GPIO_PWM2A_OUT,
+		.mcpwm2b_out_num = GPIO_PWM2B_OUT
+	};
+	mcpwm_set_pin(MCPWM_UNIT_0, &pin_config);
+
+	//2. initialize mcpwm configuration
+	printf("Configuring Initial Parameters of mcpwm at 400Hz...\n");
+	mcpwm_config_t pwm_config;
+	pwm_config.frequency = 400;    //frequency = 1000Hz
+	pwm_config.cmpr_a = 60.0;       //duty cycle of PWMxA = 60.0%
+	pwm_config.cmpr_b = 50.0;       //duty cycle of PWMxb = 50.0%
+	pwm_config.counter_mode = MCPWM_UP_COUNTER;
+	pwm_config.duty_mode = MCPWM_DUTY_MODE_1; // 1 Active low duty,  i.e. duty cycle proportional to low  time for asymmetric MCPWM
+	mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);   //Configure PWM0A & PWM0B with above settings
+
+	pwm_config.frequency = 400;     //frequency = 500Hz
+	pwm_config.cmpr_a = 45.9;       //duty cycle of PWMxA = 45.9%
+	pwm_config.cmpr_b = 7.0;    //duty cycle of PWMxb = 07.0%
+	pwm_config.counter_mode = MCPWM_UP_COUNTER;
+	pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
+	mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);   //Configure PWM1A & PWM1B with above settings
+
+	pwm_config.frequency = 400;     //frequency = 400Hz
+	pwm_config.cmpr_a = 23.2;       //duty cycle of PWMxA = 23.2%
+	pwm_config.cmpr_b = 97.0;       //duty cycle of PWMxb = 97.0%
+	pwm_config.counter_mode = MCPWM_DOWN_COUNTER;
+	pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
+	mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);   //Configure PWM2A & PWM2B with above settings
+
+	for (uint8_t i = 0; i < NUM_GROUPS; i++ ) {
+		pwm_group &group = pwm_group_list[i];
+		group.current_mode = MODE_PWM_NORMAL;
+		for (uint8_t j = 0; j < 5; j++ ) { // max 6 outputs per PWM UNIT,
+			pwm_out out = group.out_list[j];
+			uint8_t chan = out.chan;
+			if (chan >= 12) //chercher la valeur exacte
+				out.chan = CHAN_DISABLED;
+			if (out.chan != CHAN_DISABLED) {
+				group.ch_mask |= (1U << out.chan);
+				mcpwm_gpio_init(out.unit_num, out.io_signal, out.gpio_num);
+				mcpwm_config_t pwm_config;
+				pwm_config.frequency = 50;    //frequency = 400Hz, which just happens to be 8 channels at 50Hz typical rate
+				pwm_config.cmpr_a = 10;    //duty cycle of PWMxA = 0
+				pwm_config.cmpr_b = 90;    //duty cycle of PWMxb = 0
+				pwm_config.counter_mode = MCPWM_UP_COUNTER;
+				pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
+				mcpwm_init(out.unit_num, out.timer_num, &pwm_config);
+			}
 		}
-			  //max of first 6 pwm's in the first MCPWM_UNIT_0
-
-			 	    printf("initializing mcpwm gpio...\n");
-			 		#define GPIO_PWM0A_OUT 19   //Set GPIO as PWM0A - whatever is defined in this slot no worky
-			 		#define GPIO_PWM0B_OUT 16   //Set GPIO as PWM0B
-			 		#define GPIO_PWM1A_OUT 0   //Set GPIO as PWM1A
-			 		#define GPIO_PWM1B_OUT 0  //Set GPIO as PWM1B
-			 		#define GPIO_PWM2A_OUT 0   //Set GPIO as PWM2A
-			 		#define GPIO_PWM2B_OUT 0   //Set GPIO as PWM2B
-			 	    mcpwm_pin_config_t pin_config = {
-			 	        .mcpwm0a_out_num = GPIO_PWM0A_OUT,
-			 	        .mcpwm0b_out_num = GPIO_PWM0B_OUT,
-			 	        .mcpwm1a_out_num = GPIO_PWM1A_OUT,
-			 	        .mcpwm1b_out_num = GPIO_PWM1B_OUT,
-			 	        .mcpwm2a_out_num = GPIO_PWM2A_OUT,
-			 	        .mcpwm2b_out_num = GPIO_PWM2B_OUT
-			 	    };
-			 	    mcpwm_set_pin(MCPWM_UNIT_0, &pin_config);
-			 
-			 
-			 	    //2. initialize mcpwm configuration
-			 	    printf("Configuring Initial Parameters of mcpwm at 400Hz...\n");
-			 	    mcpwm_config_t pwm_config;
-			 	    pwm_config.frequency = 400;    //frequency = 1000Hz
-			 	    pwm_config.cmpr_a = 60.0;       //duty cycle of PWMxA = 60.0%
-			 	    pwm_config.cmpr_b = 50.0;       //duty cycle of PWMxb = 50.0%
-			 	    pwm_config.counter_mode = MCPWM_UP_COUNTER;
-			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1; // 1 Active low duty,  i.e. duty cycle proportional to low  time for asymmetric MCPWM
-			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);   //Configure PWM0A & PWM0B with above settings
-			 
-			 	    pwm_config.frequency = 400;     //frequency = 500Hz
-			 	    pwm_config.cmpr_a = 45.9;       //duty cycle of PWMxA = 45.9%
-			 	    pwm_config.cmpr_b = 7.0;    //duty cycle of PWMxb = 07.0%
-			 	    pwm_config.counter_mode = MCPWM_UP_COUNTER;
-			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
-			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &pwm_config);   //Configure PWM1A & PWM1B with above settings
-			 
-			 	    pwm_config.frequency = 400;     //frequency = 400Hz
-			 	    pwm_config.cmpr_a = 23.2;       //duty cycle of PWMxA = 23.2%
-			 	    pwm_config.cmpr_b = 97.0;       //duty cycle of PWMxb = 97.0%
-			 	    pwm_config.counter_mode = MCPWM_DOWN_COUNTER;
-			 	    pwm_config.duty_mode = MCPWM_DUTY_MODE_1;
-			 	    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_2, &pwm_config);   //Configure PWM2A & PWM2B with above settings
-
-        for (uint8_t i = 0; i < NUM_GROUPS; i++ ) {
-                pwm_group &group = pwm_group_list[i];
-                group.current_mode = MODE_PWM_NORMAL;
-                for (uint8_t j = 0; j < 5; j++ ) { // max 6 outputs per PWM UNIT,
-                        pwm_out out = group.out_list[j];
-                        uint8_t chan = out.chan;
-                        if (chan >= 12) //chercher la valeur exacte
-                                out.chan = CHAN_DISABLED;
-                        if (out.chan != CHAN_DISABLED) {
-                                group.ch_mask |= (1U << out.chan);
-                                mcpwm_gpio_init(out.unit_num, out.io_signal, out.gpio_num);
-                                mcpwm_config_t pwm_config;
-                                pwm_config.frequency = 50;    //frequency = 400Hz, which just happens to be 8 channels at 50Hz typical rate
-                                pwm_config.cmpr_a = 10;    //duty cycle of PWMxA = 0
-                                pwm_config.cmpr_b = 90;    //duty cycle of PWMxb = 0
-                                pwm_config.counter_mode = MCPWM_UP_COUNTER;
-                                pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
-                                mcpwm_init(out.unit_num, out.timer_num, &pwm_config);
-                        }
-                }
-        }
-        //set_freq(0xFFFF ^ ((1U << 0) - 1), 500);
+	}
+	//set_freq(0xFFFF ^ ((1U << 0) - 1), 500);
 #ifdef HAL_GPIO_PIN_SAFETY_IN
-        safety_state = AP_HAL::Util::SAFETY_DISARMED;
+	safety_state = AP_HAL::Util::SAFETY_DISARMED;
 #endif
 
-
+	printf("RCOutput::init() - end\n");
 }
 
 
