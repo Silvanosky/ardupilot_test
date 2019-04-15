@@ -38,7 +38,7 @@ void Scheduler::init()
     xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
     xTaskCreate(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle);
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
-//    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
+    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
     xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle);
 }
 
@@ -185,29 +185,66 @@ void Scheduler::_rcin_thread(void *arg)
 
 static const char* TAG = "MOTOR";
 
+static const int nothing[4] = {1500, 1500, 1500, 1500};
+static const int down[4] =    {1500, 1500, 1570, 1570};
+static const int forward[4] = {1415, 1415, 1500, 1500};
+static const int right[4] =   {1570, 1415, 1500, 1500};
+static const int left[4] =    {1415, 1570, 1500, 1500};
+
+
+static const struct Inst {
+	const int* a;
+	long t;
+} ins[] = {
+        {nothing, 3000},
+	{down,    3000},
+	{forward, 10000},
+	{right,   3000},
+	{forward, 5000},
+	{right,   3000},
+	{forward, 8000},
+	{down,    3000},
+	{left,    3000},
+	{forward, 5000},
+	{left,    3000},
+	{forward, 8000},
+        {nothing, 10000},
+};
+
 void Scheduler::test_esc(void* arg)
 {
     Scheduler *sched = (Scheduler *)arg;
-    for (long i = 0; i < 5000; ++i)
-    {
-	hal.rcout->write(0, 1600);
-	sched->delay_microseconds(1000);
-    }
-    sched->delay(500);
-
-    long n = 0;
-    int v = 1;
+    /*
     while (true)
     {
-	hal.rcout->write(0, 1600 + n);
-	sched->delay(100);
-	n += v;
-	if (n > 300)
-	    v = -1;
-	if (n < 10)
-	    v = 1;
-	ESP_LOGI(TAG, "PWM value: %d", 1600 + n);
+	int value[4];
+	for (int i = 0; i < 4; i++)
+	    value[i] = hal.rcout->read_last_sent(i);
+
+	printf("%d,%d,%d,%d,\n", value[0], value[1], value[2], value[3]);
+    }*/
+    long n = 0;
+    for (size_t i = 0; i < ARRAY_SIZE(ins); n++)
+    {
+	if (n > ins[i].t)
+	{
+	    i++;
+	    n = 0;
+	    printf("Changing action to: %d.\n", i);
+	}
+
+	for (int j = 0; j < 4; ++j)
+	    hal.rcout->write(j, ins[i].a[j]);
+
+	sched->delay_microseconds(1000);
     }
+
+
+    while (true)
+    {
+	    sched->delay_microseconds(1000);
+    }
+
 }
 
 void Scheduler::_run_io(void)
