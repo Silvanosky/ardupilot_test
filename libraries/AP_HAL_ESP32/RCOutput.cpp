@@ -69,34 +69,34 @@ void RCOutput::init()
 
 
 	// list of 6 pins we'll be using for PWM out:
-	int myints[] = {19,16,17,21};
+	int myints[] = {19,16,17,21, 18, 5};
 	// 0A,0B,1A,1B,2A,2B timers, signals and operators.
 	mcpwm_timer_t mytimers[] = {
 		MCPWM_TIMER_0,
 		MCPWM_TIMER_0,
 		MCPWM_TIMER_1,
 		MCPWM_TIMER_1,
-		//MCPWM_TIMER_2,
-		//MCPWM_TIMER_2
+		MCPWM_TIMER_2,
+		MCPWM_TIMER_2
 	};
 	mcpwm_io_signals_t mysignals[] = {
 		MCPWM0A,
 		MCPWM0B,
 		MCPWM1A,
 		MCPWM1B,
-		//MCPWM2A,
-		//MCPWM2B
+		MCPWM2A,
+		MCPWM2B
 	};
 	mcpwm_operator_t myops[] = {
 		MCPWM_OPR_A,
 		MCPWM_OPR_B,
 		MCPWM_OPR_A,
 		MCPWM_OPR_B,
-		//MCPWM_OPR_A,
-		//MCPWM_OPR_B
+		MCPWM_OPR_A,
+		MCPWM_OPR_B
 	};
 	// setup all the timers and signals etc
-	for ( int i = 0 ; i < 4; i++) {
+	for ( int i = 0 ; i < 6; i++) {
 		pwm_out out;
 		out.gpio_num = myints[i];
 		out.unit_num = MCPWM_UNIT_0;
@@ -113,8 +113,8 @@ void RCOutput::init()
 #define GPIO_PWM0B_OUT 16   //Set GPIO as PWM0B
 #define GPIO_PWM1A_OUT 17   //Set GPIO as PWM1A
 #define GPIO_PWM1B_OUT 21  //Set GPIO as PWM1B
-#define GPIO_PWM2A_OUT 0   //Set GPIO as PWM2A
-#define GPIO_PWM2B_OUT 0   //Set GPIO as PWM2B
+#define GPIO_PWM2A_OUT 18   //Set GPIO as PWM2A
+#define GPIO_PWM2B_OUT 5   //Set GPIO as PWM2B
 	mcpwm_pin_config_t pin_config = {
 		.mcpwm0a_out_num = GPIO_PWM0A_OUT,
 		.mcpwm0b_out_num = GPIO_PWM0B_OUT,
