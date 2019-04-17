@@ -38,7 +38,7 @@ void Scheduler::init()
     xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
     xTaskCreate(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle);
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
-    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
+//    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
     xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle);
 }
 
@@ -222,7 +222,10 @@ void Scheduler::test_esc(void* arg)
 	    value[i] = hal.rcout->read_last_sent(i);
 
 	printf("%d,%d,%d,%d,\n", value[0], value[1], value[2], value[3]);
-    }*/
+	sched->delay(5000);
+    }
+    return;
+    */
     long n = 0;
     for (size_t i = 0; i < ARRAY_SIZE(ins); n++)
     {
@@ -327,7 +330,8 @@ void Scheduler::_main_thread(void *arg)
     Scheduler *sched = (Scheduler *)arg;
     hal.uartA->begin(115200);
     hal.uartB->begin(38400);
-    hal.uartC->begin(57600);
+    //hal.uartC->begin(57600);
+    hal.uartC->begin(921600);
     hal.analogin->init();
     hal.rcout->init();
 
