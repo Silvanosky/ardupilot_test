@@ -858,6 +858,8 @@ AP_InertialSensor::detect_backends(void)
     ADD_BACKEND(AP_InertialSensor_L3G4200D::probe(*this, hal.i2c_mgr->get_device(HAL_INS_L3G4200D_I2C_BUS, HAL_INS_L3G4200D_I2C_ADDR)));
 #elif HAL_INS_DEFAULT == HAL_INS_MPU9250_I2C
     ADD_BACKEND(AP_InertialSensor_Invensense::probe(*this, hal.i2c_mgr->get_device(HAL_INS_MPU9250_I2C_BUS, HAL_INS_MPU9250_I2C_ADDR)));
+#elif HAL_INS_DEFAULT == HAL_INS_ICM20XXX_I2C
+    ADD_BACKEND(AP_InertialSensor_Invensensev2::probe(*this, hal.i2c_mgr->get_device(HAL_INS_ICM20XXX_I2C_BUS, HAL_INS_ICM20XXX_I2C_ADDR)));
 #elif HAL_INS_DEFAULT == HAL_INS_BBBMINI
     ADD_BACKEND(AP_InertialSensor_Invensense::probe(*this, hal.spi->get_device(HAL_INS_MPU9250_NAME)));
     ADD_BACKEND(AP_InertialSensor_Invensense::probe(*this, hal.spi->get_device(HAL_INS_MPU9250_NAME_EXT)));
