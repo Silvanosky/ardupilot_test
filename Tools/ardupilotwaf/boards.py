@@ -76,7 +76,7 @@ class Board:
             '-fdata-sections',
             '-fsigned-char',
 
-            '-Wall',
+            #'-Wall',
             '-Wextra',
             '-Wformat',
             '-Wpointer-arith',
@@ -86,7 +86,7 @@ class Board:
             '-Wno-redundant-decls',
             '-Wno-unknown-pragmas',
             '-Wno-trigraphs',
-            '-Werror=shadow',
+#            '-Werror=shadow',
             '-Werror=return-type',
             '-Werror=unused-result',
             '-Werror=narrowing',
@@ -166,9 +166,9 @@ class Board:
             '-Werror=sign-compare',
             '-Werror=type-limits',
             '-Werror=unused-result',
-            '-Werror=shadow',
+            #'-Werror=shadow',
             '-Werror=unused-variable',
-            '-Wfatal-errors',
+           #  '-Wfatal-errors',
             '-Wno-trigraphs',
         ]
 
