@@ -159,7 +159,7 @@ void Sub::exit_mode(control_mode_t old_control_mode, control_mode_t new_control_
 // returns true or false whether mode requires GPS
 bool Sub::mode_requires_GPS(control_mode_t mode)
 {
-    switch (mode) {
+    /*switch (mode) {
     case AUTO:
     case GUIDED:
     case CIRCLE:
@@ -167,7 +167,7 @@ bool Sub::mode_requires_GPS(control_mode_t mode)
         return true;
     default:
         return false;
-    }
+    }*/
 
     return false;
 }

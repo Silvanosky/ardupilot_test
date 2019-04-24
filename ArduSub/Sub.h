@@ -537,7 +537,7 @@ private:
     float get_auto_heading(void);
     bool circle_init(void);
     void circle_run();
-    bool guided_init(bool ignore_checks = false);
+    bool guided_init(bool ignore_checks = true);
     void guided_pos_control_start();
     void guided_vel_control_start();
     void guided_posvel_control_start();
