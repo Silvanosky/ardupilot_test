@@ -32,7 +32,7 @@
 static ESP32::UARTDriver cons(0);
 static Empty::UARTDriver uartADriver;
 static Empty::UARTDriver uartBDriver;
-static ESP32::WiFiDriver uartCDriver;
+static Empty::UARTDriver uartCDriver;
 static ESP32::UARTDriver uartDDriver(1);
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;
@@ -70,6 +70,7 @@ HAL_ESP32::HAL_ESP32() :
         &schedulerInstance,
         &utilInstance,
         &opticalFlowDriver,
+	nullptr,
         nullptr
     )
 {}
