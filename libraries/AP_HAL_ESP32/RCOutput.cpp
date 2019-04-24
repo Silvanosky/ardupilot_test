@@ -160,7 +160,6 @@ void RCOutput::init()
 			if (out.chan != CHAN_DISABLED) {
 				group.ch_mask |= (1U << out.chan);
 				mcpwm_gpio_init(out.unit_num, out.io_signal, out.gpio_num);
-				mcpwm_config_t pwm_config;
 				pwm_config.frequency = 50;    //frequency = 400Hz, which just happens to be 8 channels at 50Hz typical rate
 				pwm_config.cmpr_a = 10;    //duty cycle of PWMxA = 0
 				pwm_config.cmpr_b = 90;    //duty cycle of PWMxb = 0
@@ -224,9 +223,9 @@ void RCOutput::enable_ch(uint8_t chan)
 void RCOutput::disable_ch(uint8_t chan)
 {
         for (uint8_t i = 0; i < NUM_GROUPS; i++ ) {
-                pwm_group &group = pwm_group_list[i];
+                //pwm_group &group = pwm_group_list[i];
                 for (uint8_t j = 0; j < 4; j++) {
-                        pwm_out &out = group.out_list[j];
+                        //pwm_out &out = group.out_list[j];
                         //if (out.chan == chan)
                              //   mcpwm_stop(out.unit_num, out.timer_num);
                 }
