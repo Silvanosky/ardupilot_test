@@ -183,7 +183,7 @@ void Scheduler::_rcin_thread(void *arg)
 }
 
 
-static const char* TAG = "MOTOR";
+//static const char* TAG = "MOTOR";
 
 static const int nothing[4] = {1500, 1500, 1500, 1500};
 static const int down[4] =    {1500, 1500, 1570, 1570};
