@@ -14,6 +14,7 @@
  */
 
 #include "AP_HAL_ESP32/Scheduler.h"
+#include "SdCard.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -33,6 +34,7 @@ Scheduler::Scheduler()
 
 void Scheduler::init()
 {
+    mount_sdcard();
     xTaskCreate(_main_thread, "APM_MAIN", Scheduler::MAIN_SS, this, Scheduler::MAIN_PRIO, &_main_task_handle);
     xTaskCreate(_timer_thread, "APM_TIMER", TIMER_SS, this, TIMER_PRIO, &_timer_task_handle);
     xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
@@ -57,12 +59,11 @@ void Scheduler::delay(uint16_t ms)
 
 void Scheduler::delay_microseconds(uint16_t us)
 {
-    uint64_t start = AP_HAL::micros64();
-    uint16_t tick = portTICK_PERIOD_MS * 1000;
-    vTaskDelay((us+tick/2)/tick);
-    uint64_t now = AP_HAL::micros64();
-    if(start + us > now) {
-        ets_delay_us((start + us) - now);
+    if (us <= 100) {
+        ets_delay_us(us);
+    } else {
+        uint32_t tick = portTICK_PERIOD_MS * 1000;
+        vTaskDelay((us+tick-1)/tick);
     }
 }
 
@@ -109,6 +110,7 @@ void Scheduler::register_timer_failsafe(AP_HAL::Proc failsafe, uint32_t period_u
 void Scheduler::reboot(bool hold_in_bootloader)
 {
     printf("Restarting now...\n");
+    unmount_sdcard();
     esp_restart();
 }
 

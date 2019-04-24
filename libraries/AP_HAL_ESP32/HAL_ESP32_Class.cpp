@@ -19,6 +19,7 @@
 #if CONFIG_HAL_BOARD == HAL_BOARD_ESP32
 #include "HAL_ESP32_Class.h"
 #include "Scheduler.h"
+#include "I2CDevice.h"
 #include "SPIDevice.h"
 #include "I2CDevice.h"
 #include "UARTDriver.h"
@@ -26,7 +27,6 @@
 #include "Storage.h"
 #include "RCOutput.h"
 #include "Storage.h"
-#include "RCOutput.h"
 #include "Util.h"
 
 static ESP32::UARTDriver cons(0);

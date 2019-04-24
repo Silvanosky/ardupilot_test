@@ -36,7 +36,6 @@ UARTDriver::UARTDriver(uint8_t serial_num)
         rx_pin = 35;
         tx_pin = 33;
     }
-    ESP_LOGI(TAG, "Create uart: rx: %d, tx: %d", rx_pin, tx_pin);
 }
 
 void UARTDriver::begin(uint32_t b)

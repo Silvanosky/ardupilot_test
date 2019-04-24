@@ -32,7 +32,7 @@
 #if defined(__APPLE__) && defined(__MACH__)
 #include <sys/param.h>
 #include <sys/mount.h>
-#else
+#elif !defined(HAL_BOARD_ESP32)
 #include <sys/statfs.h>
 #endif
 #endif
@@ -192,7 +192,7 @@ bool AP_Logger_File::CardInserted(void) const
 // returns -1 on error
 int64_t AP_Logger_File::disk_space_avail()
 {
-#if HAL_OS_POSIX_IO
+#if HAL_OS_POSIX_IO &&  !defined(HAL_BOARD_ESP32)
     struct statfs _stats;
     if (statfs(_log_directory, &_stats) < 0) {
         return -1;
@@ -211,13 +211,13 @@ int64_t AP_Logger_File::disk_space_avail()
 // returns -1 on error
 int64_t AP_Logger_File::disk_space()
 {
-#if HAL_OS_POSIX_IO
+#if HAL_OS_POSIX_IO && !defined(HAL_BOARD_ESP32)
     struct statfs _stats;
     if (statfs(_log_directory, &_stats) < 0) {
         return -1;
     }
     return (((int64_t)_stats.f_blocks) * _stats.f_bsize);
-#elif HAL_OS_FATFS_IO
+#elif HAL_OS_FATFS_IO 
     return fs_gettotal();
 #else
     // return fake disk space size
@@ -930,9 +930,9 @@ uint16_t AP_Logger_File::start_new_log(void)
     // systems as open/write
     hal.scheduler->expect_delay_ms(3000);
 #if HAL_OS_POSIX_IO
-    int fd = open(fname, O_WRONLY|O_CREAT|O_CLOEXEC, 0644);
+    int fd = open(fname, O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666);
 #else
-    int fd = open(fname, O_WRONLY|O_CREAT|O_CLOEXEC);
+    int fd = open(fname, O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC);
 #endif
     hal.scheduler->expect_delay_ms(0);
     free(fname);
@@ -1092,7 +1092,7 @@ bool AP_Logger_File::logging_enabled() const
 bool AP_Logger_File::io_thread_alive() const
 {
     // if the io thread hasn't had a heartbeat in a full second then it is dead
-    return (AP_HAL::millis() - _io_timer_heartbeat) < 1000;
+    return (AP_HAL::millis() - _io_timer_heartbeat) < 10000;
 }
 
 bool AP_Logger_File::logging_failed() const
