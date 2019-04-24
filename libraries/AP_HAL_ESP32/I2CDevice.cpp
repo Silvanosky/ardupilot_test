@@ -22,7 +22,7 @@
 using namespace ESP32;
 
 #ifndef HAL_I2C_INTERNAL_MASK
-#define HAL_I2C_INTERNAL_MASK 0
+#define HAL_I2C_INTERNAL_MASK 0xFF
 #endif
 
 i2c_config_t i2c_bus_config[1] = {{
@@ -81,7 +81,13 @@ bool I2CDevice::transfer(const uint8_t *send, uint32_t send_len,
         i2c_master_read(cmd, (uint8_t *)recv, recv_len, I2C_MASTER_LAST_NACK);
     }
     i2c_master_stop(cmd);
+
+    if (!_mutex.take_nonblocking())
+	    return false;
+
     bool result = (i2c_master_cmd_begin((i2c_port_t)bus.bus, cmd, portMAX_DELAY) == ESP_OK);
+
+    _mutex.give();
     i2c_cmd_link_delete(cmd);
     return result;
 }
