@@ -23,6 +23,8 @@
 #include "I2CDevice.h"
 #include "UARTDriver.h"
 #include "WiFiDriver.h"
+#include "RCInput.h"
+#include "RCOutput.h"
 #include "Storage.h"
 #include "RCOutput.h"
 #include "Storage.h"
@@ -42,8 +44,8 @@ static ESP32::SPIDeviceManager spiDeviceManager;
 static ESP32::AnalogIn analogIn;
 static ESP32::Storage storageDriver;
 static Empty::GPIO gpioDriver;
-static Empty::RCInput rcinDriver;
 static ESP32::RCOutput rcoutDriver;
+static ESP32::RCInput rcinDriver;
 static ESP32::Scheduler schedulerInstance;
 static ESP32::Util utilInstance;
 static Empty::OpticalFlow opticalFlowDriver;
