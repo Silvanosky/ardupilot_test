@@ -31,10 +31,19 @@
 #include "AnalogIn.h"
 #include "Util.h"
 
-static ESP32::UARTDriver cons(0);
+#ifdef HAL_ESP32_NO_MAVLINK_0
 static Empty::UARTDriver uartADriver;
+static ESP32::UARTDriver cons(0);
+#else
+static ESP32::UARTDriver uartADriver(0);
+#define cons uartADriver
+#endif
 static Empty::UARTDriver uartBDriver;
+#ifdef HAL_ESP32_WIFI
 static ESP32::WiFiDriver uartCDriver;
+#else
+static Empty::UARTDriver uartCDriver;
+#endif
 static ESP32::UARTDriver uartDDriver(1);
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;
@@ -49,6 +58,7 @@ static ESP32::RCInput rcinDriver;
 static ESP32::Scheduler schedulerInstance;
 static ESP32::Util utilInstance;
 static Empty::OpticalFlow opticalFlowDriver;
+static Empty::Flash flashDriver;
 
 extern const AP_HAL::HAL& hal;
 
@@ -72,7 +82,7 @@ HAL_ESP32::HAL_ESP32() :
         &schedulerInstance,
         &utilInstance,
         &opticalFlowDriver,
-		nullptr,
+        &flashDriver,
         nullptr
     )
 {}
