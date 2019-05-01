@@ -172,7 +172,7 @@ AP_Compass_Backend *AP_Compass_AK09916::probe_ICM20948(uint8_t inv2_instance,
     AP_InertialSensor &ins = AP::ins();
 
     AP_AK09916_BusDriver *bus =
-        new AP_AK09916_BusDriver_Auxiliary(ins, HAL_INS_INV2_SPI, inv2_instance, HAL_COMPASS_AK09916_I2C_ADDR);
+        new AP_AK09916_BusDriver_Auxiliary(ins, HAL_INS_INV2_I2C, inv2_instance, HAL_COMPASS_AK09916_I2C_ADDR);
     if (!bus) {
         return nullptr;
     }
@@ -356,6 +356,7 @@ AP_AK09916_BusDriver_Auxiliary::AP_AK09916_BusDriver_Auxiliary(AP_InertialSensor
      */
     _bus = ins.get_auxiliary_bus(backend_id, backend_instance);
     if (!_bus) {
+	printf("No bus\n");
         return;
     }
 
