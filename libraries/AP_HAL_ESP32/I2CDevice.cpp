@@ -16,6 +16,7 @@
 
 #include <AP_HAL/AP_HAL.h>
 #include <AP_Math/AP_Math.h>
+#include <AP_Common/Semaphore.h>
 #include "Scheduler.h"
 #include "driver/i2c.h"
 
@@ -25,7 +26,8 @@ using namespace ESP32;
 #define HAL_I2C_INTERNAL_MASK 0xFF
 #endif
 
-i2c_config_t i2c_bus_config[1] = {{
+i2c_config_t i2c_bus_config[1] = {
+    {
         .mode = I2C_MODE_MASTER,
         .sda_io_num = (gpio_num_t)23,
         .sda_pullup_en = GPIO_PULLUP_ENABLE,
@@ -42,13 +44,13 @@ I2CDeviceManager::I2CDeviceManager(void)
     for (uint8_t i=0; i<ARRAY_SIZE(i2c_bus_config); i++) {
         businfo[i].bus = i;
         i2c_param_config((i2c_port_t)i, &i2c_bus_config[i]);
-        i2c_driver_install((i2c_port_t)i, I2C_MODE_MASTER, 0, 0, 0);
+        i2c_driver_install((i2c_port_t)i, I2C_MODE_MASTER, 0, 0, ESP_INTR_FLAG_IRAM);
         i2c_filter_enable((i2c_port_t)i, 7);
     }
 }
 
 I2CDevice::I2CDevice(uint8_t busnum, uint8_t address, uint32_t bus_clock, bool use_smbus, uint32_t timeout_ms) :
-    _retries(2),
+    _retries(10),
     _address(address),
     bus(I2CDeviceManager::businfo[busnum])
 {
@@ -66,6 +68,11 @@ I2CDevice::~I2CDevice()
 bool I2CDevice::transfer(const uint8_t *send, uint32_t send_len,
                          uint8_t *recv, uint32_t recv_len)
 {
+    if (!bus.semaphore.check_owner()) {
+        printf("I2C: not owner of 0x%x\n", (unsigned)get_bus_id());
+        return false;
+    }
+
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     if (send_len != 0 && send != nullptr) {
         //tx with optional rx (after tx)
@@ -82,14 +89,21 @@ bool I2CDevice::transfer(const uint8_t *send, uint32_t send_len,
     }
     i2c_master_stop(cmd);
 
-    if (!_mutex.take_nonblocking())
-	    return false;
+    bool result  = false;
 
-    bool result = (i2c_master_cmd_begin((i2c_port_t)bus.bus, cmd, portMAX_DELAY) == ESP_OK);
+    for (int i = 0; !result && i < _retries; ++i)
+    {
+	result = (i2c_master_cmd_begin((i2c_port_t)bus.bus, cmd, 1 / portTICK_RATE_MS) == ESP_OK);
 
-    _mutex.give();
+	if (!result)
+	{
+		i2c_reset_tx_fifo((i2c_port_t)bus.bus);
+		i2c_reset_rx_fifo((i2c_port_t)bus.bus);
+	}
+    }
 
     i2c_cmd_link_delete(cmd);
+
     return result;
 }
 

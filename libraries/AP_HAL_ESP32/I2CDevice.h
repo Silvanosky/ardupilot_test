@@ -24,6 +24,8 @@
 #include "Scheduler.h"
 #include "DeviceBus.h"
 
+#include "driver/i2c.h"
+
 
 namespace ESP32 {
 
@@ -90,7 +92,6 @@ private:
     uint8_t _address;
     char *pname;
 
-    Semaphore _mutex;
 };
 
 class I2CDeviceManager : public AP_HAL::I2CDeviceManager {
