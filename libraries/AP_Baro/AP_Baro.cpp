@@ -40,6 +40,7 @@
 #include "AP_Baro_LPS2XH.h"
 #include "AP_Baro_FBM320.h"
 #include "AP_Baro_DPS280.h"
+#include "AP_Baro_Analog.h"
 #if HAL_WITH_UAVCAN
 #include "AP_Baro_UAVCAN.h"
 #endif
@@ -594,6 +595,9 @@ void AP_Baro::init(void)
 #elif HAL_BARO_DEFAULT == HAL_BARO_LPS22H_SPI
     ADD_BACKEND(AP_Baro_LPS2XH::probe(*this,
                                       std::move(hal.spi->get_device(HAL_BARO_LPS22H_NAME))));
+#elif HAL_BARO_DEFAULT == HAL_BARO_ANALOG
+	ADD_BACKEND(AP_Baro_Analog::probe(*this,
+									  HAL_BARO_ANALOG_PIN));
 #endif
 
     // can optionally have baro on I2C too

@@ -15,6 +15,7 @@
 
 #include "AP_HAL_ESP32/Scheduler.h"
 #include "AP_HAL_ESP32/RCInput.h"
+#include "AP_HAL_ESP32/AnalogIn.h"
 #include "SdCard.h"
 #include "Profile.h"
 
@@ -44,6 +45,7 @@ void Scheduler::init()
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
 //    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
     xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle);
+//    xTaskCreate(_print_profile, "APM_PROFILE", IO_SS, this, IO_PRIO, nullptr);
 }
 
 void Scheduler::delay(uint16_t ms)
@@ -141,10 +143,10 @@ void Scheduler::_timer_thread(void *arg)
         sched->delay_microseconds(1000);
         sched->_run_timers();
         // process any pending RC output requests
-        //hal.rcout->timer_tick();
+        hal.rcout->timer_tick();
         //analog in
-        //((AnalogIn *)hal.analogin)->_timer_tick();
-    }
+		((AnalogIn*)hal.analogin)->_timer_tick();
+	}
 }
 
 void Scheduler::_run_timers()
@@ -292,7 +294,7 @@ void Scheduler::_io_thread(void* arg)
 void Scheduler::_storage_thread(void* arg)
 {
     Scheduler *sched = (Scheduler *)arg;
-    while (sched->_initialized) {
+    while (!sched->_initialized) {
         sched->delay_microseconds(10000);
     }
     while (true) {
@@ -301,6 +303,21 @@ void Scheduler::_storage_thread(void* arg)
         hal.storage->_timer_tick();
         print_profile();
     }
+}
+
+void Scheduler::_print_profile(void* arg)
+{
+    Scheduler *sched = (Scheduler *)arg;
+    while (!sched->_initialized) {
+        sched->delay_microseconds(10000);
+    }
+
+    while (true)
+    {
+        sched->delay_microseconds(10000);
+        print_profile();
+    }
+
 }
 
 void Scheduler::_uart_thread(void *arg)
@@ -347,6 +364,7 @@ void Scheduler::_main_thread(void *arg)
     while (true) {
         sched->callbacks->loop();
         sched->delay_microseconds(250);
+
         //print_stats();
     }
 }

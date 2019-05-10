@@ -17,6 +17,9 @@
 #include <AP_HAL/AP_HAL.h>
 #include <AP_Common/Semaphore.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
@@ -61,7 +64,7 @@ const AnalogIn::pin_info AnalogIn::pin_config[] = {
 #define ADC_GRP1_NUM_CHANNELS   ARRAY_SIZE(AnalogIn::pin_config)
 
 
-#define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
+#define DEFAULT_VREF    1100       //Use adc2_vref_to_gpio() to obtain a better estimate
 
 static const adc_atten_t atten = ADC_ATTEN_DB_0;
 
@@ -73,12 +76,19 @@ AnalogSource::AnalogSource(int16_t pin, float initial_value, uint8_t unit) :
 	_sum_count(0),
 	_sum_value(0)
 {
+	printf("Adding analogin on: %d\n", pin);
+	gpio_num_t gpio;
 	//Configure ADC
-	if (unit == ADC_UNIT_1) {
+	if (unit == 1) {
 		adc1_config_channel_atten((adc1_channel_t)_pin, atten);
+		adc1_pad_get_io_num((adc1_channel_t)_pin, &gpio);
 	} else {
 		adc2_config_channel_atten((adc2_channel_t)_pin, atten);
 	}
+
+    esp_adc_cal_characteristics_t adc_chars;
+    esp_adc_cal_characterize(ADC_UNIT_1, atten, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adc_chars);
+	printf("Adding gpio on: %d\n", gpio);
 }
 
 
@@ -87,8 +97,9 @@ float AnalogSource::read_average()
 	WITH_SEMAPHORE(_semaphore);
 
 	if (_sum_count == 0) {
-		return _value;
+		return adc1_get_raw((adc1_channel_t)_pin);
 	}
+
 	_value = _sum_value / _sum_count;
 	_sum_value = 0;
 	_sum_count = 0;
@@ -158,7 +169,7 @@ void AnalogSource::_add_value()
 	WITH_SEMAPHORE(_semaphore);
 
 	int value = 0;
-	if (_unit == ADC_UNIT_1) {
+	if (_unit == 1) {
 		value = adc1_get_raw((adc1_channel_t)_pin);
 	} else {
 		adc2_get_raw((adc2_channel_t)_pin, ADC_WIDTH_BIT_12, &value);
@@ -196,9 +207,6 @@ static void check_efuse()
    */
 void AnalogIn::init()
 {
-	if (ADC_GRP1_NUM_CHANNELS == 0) {
-		return;
-	}
 	check_efuse();
 
 	adc1_config_width(ADC_WIDTH_BIT_12);
@@ -209,7 +217,6 @@ void AnalogIn::init()
 */
 void AnalogIn::_timer_tick()
 {
-	// read adc at 100Hz
 	for (uint8_t j = 0; j < ANALOG_MAX_CHANNELS; j++) {
 		ESP32::AnalogSource *c = _channels[j];
 		if (c != nullptr) {

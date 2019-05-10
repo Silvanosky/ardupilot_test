@@ -26,19 +26,20 @@
 #include "Storage.h"
 #include "RCOutput.h"
 #include "Storage.h"
+#include "AnalogIn.h"
 #include "Util.h"
 
 static ESP32::UARTDriver cons(0);
 static Empty::UARTDriver uartADriver;
 static Empty::UARTDriver uartBDriver;
-static Empty::UARTDriver uartCDriver;
+static ESP32::WiFiDriver uartCDriver;
 static ESP32::UARTDriver uartDDriver(1);
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;
 static Empty::UARTDriver uartGDriver;
 static ESP32::I2CDeviceManager i2cDeviceManager;
 static ESP32::SPIDeviceManager spiDeviceManager;
-static Empty::AnalogIn analogIn;
+static ESP32::AnalogIn analogIn;
 static ESP32::Storage storageDriver;
 static Empty::GPIO gpioDriver;
 static Empty::RCInput rcinDriver;
@@ -69,7 +70,7 @@ HAL_ESP32::HAL_ESP32() :
         &schedulerInstance,
         &utilInstance,
         &opticalFlowDriver,
-	nullptr,
+		nullptr,
         nullptr
     )
 {}
