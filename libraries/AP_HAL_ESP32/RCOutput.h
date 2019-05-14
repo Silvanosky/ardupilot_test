@@ -104,6 +104,12 @@ private:
 
 	uint8_t chan_offset;
 
+<<<<<<< HEAD
+=======
+    uint16_t _max_channels;
+    ledc_timer_t _channel_timers[LEDC_CHANNEL_MAX];
+    bool _initialized;
+>>>>>>> eacec000a3... ESP32: fixed long build time in arch.py
 };
 
 }
