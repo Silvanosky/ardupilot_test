@@ -41,7 +41,9 @@ fun generateLinkerScript(mapFileName: String, profileFileName: String, scriptFil
     fun parseProfile() {
         Scanner(File(profileFileName)).use { scanner ->
             while (scanner.hasNext()) {
-                val address = Integer.decode(scanner.next())
+	        val ad = scanner.next()
+		System.out.println(ad)
+                val address = Integer.decode(ad)
                 val count = Integer.decode(scanner.next())
                 for(f in addressToFunction.values) {
                     if(f.address <= address && address < f.address + f.size) {
@@ -85,7 +87,7 @@ fun generateLinkerScript(mapFileName: String, profileFileName: String, scriptFil
 
 fun main(args: Array<String>) {
     generateLinkerScript(
-        "arduplane.map",
+        "ardusub.map",
         "PROF000.TXT",
         "functions.list"
     )
