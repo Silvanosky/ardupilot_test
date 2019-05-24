@@ -314,7 +314,7 @@ void Scheduler::_print_profile(void* arg)
 
     while (true)
     {
-        sched->delay_microseconds(1000000);
+        sched->delay(10000);
         print_profile();
     }
 
