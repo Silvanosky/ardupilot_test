@@ -40,7 +40,7 @@ void Scheduler::init()
     mount_sdcard();
     xTaskCreate(_main_thread, "APM_MAIN", Scheduler::MAIN_SS, this, Scheduler::MAIN_PRIO, &_main_task_handle);
     xTaskCreate(_timer_thread, "APM_TIMER", TIMER_SS, this, TIMER_PRIO, &_timer_task_handle);
-    xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
+    //xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
     xTaskCreate(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle);
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
 //    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
@@ -301,7 +301,7 @@ void Scheduler::_storage_thread(void* arg)
         sched->delay_microseconds(10000);
         // process any pending storage writes
         hal.storage->_timer_tick();
-        print_profile();
+        //print_profile();
     }
 }
 
@@ -314,7 +314,7 @@ void Scheduler::_print_profile(void* arg)
 
     while (true)
     {
-        sched->delay_microseconds(10000);
+        sched->delay_microseconds(1000000);
         print_profile();
     }
 

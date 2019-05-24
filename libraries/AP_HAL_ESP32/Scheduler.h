@@ -90,6 +90,9 @@ private:
     static void _io_thread(void *arg);
     static void _storage_thread(void *arg);
 
+
+    static void _print_profile(void* arg);
+
     static void test_esc(void* arg);
 
     bool _in_timer_proc;
