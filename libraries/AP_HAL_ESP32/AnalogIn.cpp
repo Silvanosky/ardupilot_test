@@ -65,8 +65,9 @@ const AnalogIn::pin_info AnalogIn::pin_config[] = {
 
 
 #define DEFAULT_VREF    1100       //Use adc2_vref_to_gpio() to obtain a better estimate
+#define NO_OF_SAMPLES   256          //Multisampling
 
-static const adc_atten_t atten = ADC_ATTEN_DB_0;
+static const adc_atten_t atten = ADC_ATTEN_DB_11;
 
 AnalogSource::AnalogSource(int16_t pin, float initial_value, uint8_t unit) :
 	_unit(unit),
@@ -96,8 +97,21 @@ float AnalogSource::read_average()
 {
 	WITH_SEMAPHORE(_semaphore);
 
+
 	if (_sum_count == 0) {
-		return adc1_get_raw((adc1_channel_t)_pin);
+        uint32_t adc_reading = 0;
+        //Multisampling
+        for (int i = 0; i < NO_OF_SAMPLES; i++) {
+            if (_unit == 1) {
+                adc_reading += adc1_get_raw((adc1_channel_t)_pin);
+            } else {
+                int raw;
+                adc2_get_raw((adc2_channel_t)_pin, ADC_WIDTH_BIT_12, &raw);
+                adc_reading += raw;
+            }
+        }
+        adc_reading /= NO_OF_SAMPLES;
+		return adc_reading;
 	}
 
 	_value = _sum_value / _sum_count;
@@ -221,7 +235,7 @@ void AnalogIn::_timer_tick()
 		ESP32::AnalogSource *c = _channels[j];
 		if (c != nullptr) {
 			// add a value
-			c->_add_value();
+			//c->_add_value();
 		}
 	}
 
