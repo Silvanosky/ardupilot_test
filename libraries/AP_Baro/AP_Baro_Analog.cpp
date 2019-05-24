@@ -70,14 +70,14 @@ bool AP_Baro_Analog::_init()
 void AP_Baro_Analog::update()
 {
 	double raw_pressure = _src->read_average();
-//	printf("Raw sensor value: %f\n", raw_pressure);
 	double pressure = (((raw_pressure - 97.) / 1024. )*5./0.0266)*0.069;
 
-	pressure = 1.0117 * pressure + 0.00995;//Calibrate sensor
+	pressure = 1.0117 * pressure + 0.00995; //Calibrate sensor
 
     pressure *= 100000; // bar -> Pascal
+	printf("Raw sensor value: %f Pressure: %lf Voltage: %lf mv\n", raw_pressure, pressure, raw_pressure * (3.3/4096));
 
-    _copy_to_frontend(_instance, pressure, 0.0);
+    _copy_to_frontend(_instance, -pressure, 0.0);
 }
 
 
