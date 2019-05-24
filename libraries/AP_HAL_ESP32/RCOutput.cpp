@@ -40,18 +40,6 @@ struct RCOutput::pwm_group RCOutput::pwm_group_list[] = { LIST_GROUP };
 #define SERVO_MIN_PULSEWIDTH 1000 //Minimum pulse width in microsecond
 #define SERVO_MAX_PULSEWIDTH 2000 //Maximum pulse width in microsecond
 #define SERVO_MAX_DEGREE 90 //Maximum angle in degree upto which servo can rotate
-/**
- * @brief Use this function to calcute pulse width for per degree rotation
- * @param  degree_of_rotation the angle in degree to which servo has to rotate
- * @return
- *     - calculated pulse width
- */
-static uint32_t servo_per_degree_init(uint32_t degree_of_rotation)
-{
-    uint32_t cal_pulsewidth = 0;
-    cal_pulsewidth = (SERVO_MIN_PULSEWIDTH + (((SERVO_MAX_PULSEWIDTH - SERVO_MIN_PULSEWIDTH) * (degree_of_rotation)) / (SERVO_MAX_DEGREE)));
-    return cal_pulsewidth;
-}
 
 void RCOutput::init()
 {
