@@ -223,11 +223,11 @@ void RCOutput::enable_ch(uint8_t chan)
 void RCOutput::disable_ch(uint8_t chan)
 {
         for (uint8_t i = 0; i < NUM_GROUPS; i++ ) {
-                //pwm_group &group = pwm_group_list[i];
+                pwm_group &group = pwm_group_list[i];
                 for (uint8_t j = 0; j < 4; j++) {
-                        //pwm_out &out = group.out_list[j];
-                        //if (out.chan == chan)
-                             //   mcpwm_stop(out.unit_num, out.timer_num);
+                        pwm_out &out = group.out_list[j];
+                        if (out.chan == chan)
+                                mcpwm_stop(out.unit_num, out.timer_num);
                 }
         }
 }
