@@ -41,6 +41,7 @@ I2CDeviceManager::I2CDeviceManager(void)
         };
         i2c_port_t p = i2c_bus_desc[i].port;
         businfo[i].port = p;
+        businfo[i].bus_clock = i2c_bus_desc[i].speed;
         i2c_param_config(p, &i2c_bus_config);
         i2c_driver_install(p, I2C_MODE_MASTER, 0, 0, ESP_INTR_FLAG_IRAM);
         i2c_filter_enable(p, 7);
@@ -87,17 +88,14 @@ bool I2CDevice::transfer(const uint8_t *send, uint32_t send_len,
     }
     i2c_master_stop(cmd);
 
-    bool result  = false;
-
-    for (int i = 0; !result && i < _retries; ++i)
-    {
-	result = (i2c_master_cmd_begin((i2c_port_t)bus.bus, cmd, 1 / portTICK_RATE_MS) == ESP_OK);
-
-	if (!result)
-	{
-		i2c_reset_tx_fifo((i2c_port_t)bus.bus);
-		i2c_reset_rx_fifo((i2c_port_t)bus.bus);
-	}
+	bool result = false;
+    TickType_t timeout = 1 + 16L * (send_len + recv_len) * 1000 / bus.bus_clock / portTICK_PERIOD_MS;
+    for (int i = 0; !result && i < _retries; i++) {
+        result = (i2c_master_cmd_begin(bus.port, cmd, timeout) == ESP_OK);
+        if (!result) {
+            i2c_reset_tx_fifo(bus.port);
+            i2c_reset_rx_fifo(bus.port);
+        }
     }
 
     i2c_cmd_link_delete(cmd);
