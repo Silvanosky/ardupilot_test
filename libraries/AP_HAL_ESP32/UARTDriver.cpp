@@ -59,7 +59,6 @@ void UARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
             uart_set_baudrate(p, b);
         }
     }
-    ESP_LOGI(TAG, "Start uart on: rx: %d, tx: %d, baudrate: %d", rx_pin, tx_pin, b);
 }
 
 void UARTDriver::end()
