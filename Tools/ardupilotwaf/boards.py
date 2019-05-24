@@ -169,9 +169,9 @@ class Board:
             '-Werror=sign-compare',
             '-Werror=type-limits',
             '-Werror=unused-result',
-            #'-Werror=shadow',
+            '-Werror=shadow',
             '-Werror=unused-variable',
-           #  '-Wfatal-errors',
+            '-Wfatal-errors',
             '-Wno-trigraphs',
         ]
 
