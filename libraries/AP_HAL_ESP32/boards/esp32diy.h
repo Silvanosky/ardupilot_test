@@ -34,17 +34,18 @@
 #define HAL_ESP32_WIFI 1
 
 //TODO RCOUT config
-#define HAL_ESP32_RCOUT {GPIO_NUM_27, GPIO_NUM_13, GPIO_NUM_22, GPIO_NUM_21}
+#define HAL_ESP32_RCOUT {GPIO_NUM_18, GPIO_NUM_5, GPIO_NUM_17, GPIO_NUM_16}
 
-#define HAL_ESP32_SPI_BUSES \
-    {.host=VSPI_HOST, .dma_ch=1, .mosi=GPIO_NUM_23, .miso=GPIO_NUM_19, .sclk=GPIO_NUM_18}
+#define HAL_ESP32_SPI_BUSES {}
 
 #define HAL_ESP32_SPI_DEVICES {}
 
-#define HAL_ESP32_I2C_BUSES {}
+#define HAL_ESP32_I2C_BUSES \
+	{.port=I2C_NUM_0, .sda=GPIO_NUM_23, .scl=GPIO_NUM_22, .speed=400*KHZ, .internal=true}
 
 #define HAL_ESP32_UART_DEVICES \
-    {.port=UART_NUM_0, .rx=GPIO_NUM_3 , .tx=GPIO_NUM_1 }
+    {.port=UART_NUM_0, .rx=GPIO_NUM_3 , .tx=GPIO_NUM_1 },\
+	{.port=UART_NUM_1, .rx=GPIO_NUM_21 , .tx=GPIO_NUM_19 }
 
 
 
