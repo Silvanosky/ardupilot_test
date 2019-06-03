@@ -36,6 +36,8 @@ using namespace ESP32;
 
 struct RCOutput::pwm_group RCOutput::pwm_group_list[] = { LIST_GROUP };
 
+gpio_num_t outputs_pins[] = HAL_ESP32_RCOUT;
+
 //You can get these value from the datasheet of servo you use, in general pulse width varies between 1000 to 2000 mocrosecond
 #define SERVO_MIN_PULSEWIDTH 1000 //Minimum pulse width in microsecond
 #define SERVO_MAX_PULSEWIDTH 2000 //Maximum pulse width in microsecond
@@ -46,7 +48,8 @@ void RCOutput::init()
 	printf("RCOutput::init()\n");
 
 	// configure all 6 GPIOs the same at the same time... as OUTPUTS
-#define GPIO_BIT_MASK  ((1ULL<<GPIO_NUM_19) | (1ULL<<GPIO_NUM_16) | (1ULL<<GPIO_NUM_17) | (1ULL<<GPIO_NUM_21))
+
+#define GPIO_BIT_MASK  ((1ULL<<GPIO_NUM_18) | (1ULL<<GPIO_NUM_5) | (1ULL<<GPIO_NUM_17) | (1ULL<<GPIO_NUM_16))
 	gpio_config_t io_conf;
 	io_conf.intr_type = GPIO_INTR_DISABLE;
 	io_conf.mode = GPIO_MODE_OUTPUT;
@@ -57,7 +60,7 @@ void RCOutput::init()
 
 
 	// list of 6 pins we'll be using for PWM out:
-	int myints[] = {19,16,17,21, 18, 5};
+	int myints[] = {18, 5, 17, 16};
 	// 0A,0B,1A,1B,2A,2B timers, signals and operators.
 	mcpwm_timer_t mytimers[] = {
 		MCPWM_TIMER_0,
@@ -84,7 +87,7 @@ void RCOutput::init()
 		MCPWM_OPR_B
 	};
 	// setup all the timers and signals etc
-	for ( int i = 0 ; i < 6; i++) {
+	for ( int i = 0 ; i < 4; i++) {
 		pwm_out out;
 		out.gpio_num = myints[i];
 		out.unit_num = MCPWM_UNIT_0;
@@ -97,19 +100,17 @@ void RCOutput::init()
 	//max of first 6 pwm's in the first MCPWM_UNIT_0
 
 	printf("initializing mcpwm gpio...\n");
-#define GPIO_PWM0A_OUT 19   //Set GPIO as PWM0A - whatever is defined in this slot no worky
-#define GPIO_PWM0B_OUT 16   //Set GPIO as PWM0B
+#define GPIO_PWM0A_OUT 18   //Set GPIO as PWM0A - whatever is defined in this slot no worky
+#define GPIO_PWM0B_OUT 5   //Set GPIO as PWM0B
 #define GPIO_PWM1A_OUT 17   //Set GPIO as PWM1A
-#define GPIO_PWM1B_OUT 21  //Set GPIO as PWM1B
-#define GPIO_PWM2A_OUT 18   //Set GPIO as PWM2A
-#define GPIO_PWM2B_OUT 5   //Set GPIO as PWM2B
+#define GPIO_PWM1B_OUT 16  //Set GPIO as PWM1B
 	mcpwm_pin_config_t pin_config = {
 		.mcpwm0a_out_num = GPIO_PWM0A_OUT,
 		.mcpwm0b_out_num = GPIO_PWM0B_OUT,
 		.mcpwm1a_out_num = GPIO_PWM1A_OUT,
 		.mcpwm1b_out_num = GPIO_PWM1B_OUT,
-		.mcpwm2a_out_num = GPIO_PWM2A_OUT,
-		.mcpwm2b_out_num = GPIO_PWM2B_OUT
+		//.mcpwm2a_out_num = -1,
+		//.mcpwm2b_out_num = GPIO_PWM2B_OUT
 	};
 	mcpwm_set_pin(MCPWM_UNIT_0, &pin_config);
 

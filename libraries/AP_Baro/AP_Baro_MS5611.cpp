@@ -113,6 +113,7 @@ bool AP_Baro_MS56XX::_init()
     }
 
     if (!prom_read_ok) {
+		printf("Bad read\n");
         _dev->get_semaphore()->give();
         return false;
     }
@@ -246,6 +247,7 @@ bool AP_Baro_MS56XX::_read_prom_5637(uint16_t prom[8])
     }
 
     if (all_zero) {
+		printf("All zero \n");
         return false;
     }
 
@@ -469,6 +471,7 @@ void AP_Baro_MS56XX::_calculate_5637()
 
     int32_t pressure = ((int64_t)raw_pressure * SENS / (int64_t)2097152 - OFF) / (int64_t)32768;
     float temperature = TEMP * 0.01f;
+
     _copy_to_frontend(_instance, (float)pressure, temperature);
 }
 

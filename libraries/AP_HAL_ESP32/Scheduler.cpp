@@ -42,7 +42,7 @@ void Scheduler::init()
     //xTaskCreate(_rcin_thread, "APM_RCIN", RCIN_SS, this, RCIN_PRIO, &_rcin_task_handle);
     xTaskCreate(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle);
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
-//    xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
+    //xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
     xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle);
 //    xTaskCreate(_print_profile, "APM_PROFILE", IO_SS, this, IO_PRIO, nullptr);
 }
@@ -233,22 +233,42 @@ void Scheduler::test_esc(void* arg)
     }
     return;
     */
+    sched->delay_microseconds(1000);
+
+	hal.rcout->force_safety_off();
+    for (int k = 0; k < 5; k++)
+    {
+		for (int i = 0; i < 4; i++)
+		{
+			for (size_t j = 0; j < 300; j++)
+			{
+				hal.rcout->write(i, 1600);
+				sched->delay(10);
+			}
+			hal.rcout->write(i, 1500);
+
+		}
+		sched->delay(5000);
+	}
+	hal.rcout->force_safety_on();
+
+/*
     long n = 0;
     for (size_t i = 0; i < ARRAY_SIZE(ins); n++)
     {
-	if (n > ins[i].t)
-	{
-	    i++;
-	    n = 0;
-	    printf("Changing action to: %d.\n", i);
-	}
+		if (n > ins[i].t)
+		{
+			i++;
+			n = 0;
+			printf("Changing action to: %d.\n", i);
+		}
 
-	for (int j = 0; j < 4; ++j)
-	    hal.rcout->write(j, ins[i].a[j]);
+		for (int j = 0; j < 4; ++j)
+			hal.rcout->write(j, ins[i].a[j]);
 
-	sched->delay_microseconds(1000);
+		sched->delay_microseconds(1000);
     }
-
+	*/
 
     while (true)
     {

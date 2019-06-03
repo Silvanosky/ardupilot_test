@@ -18,10 +18,11 @@
 #define HAL_INS_ICM20XXX_I2C_BUS 0
 #define HAL_INS_ICM20XXX_I2C_ADDR (0x68)
 
-//#define HAL_BARO_DEFAULT HAL_BARO_BMP280_I2C
-#define HAL_BARO_DEFAULT HAL_BARO_ANALOG
+#define HAL_BARO_ALLOW_INIT_NO_BARO
+#define HAL_BARO_DEFAULT HAL_BARO_MS5837_I2C
+//#define HAL_BARO_DEFAULT HAL_BARO_ANALOG
 //GPIO 34
-#define HAL_BARO_ANALOG_PIN (6)
+//#define HAL_BARO_ANALOG_PIN (6)
 #define HAL_BARO_BMP280_BUS 0
 #define HAL_BARO_BMP280_I2C_ADDR (0x77)
 
@@ -41,11 +42,12 @@
 #define HAL_ESP32_SPI_DEVICES {}
 
 #define HAL_ESP32_I2C_BUSES \
-	{.port=I2C_NUM_0, .sda=GPIO_NUM_23, .scl=GPIO_NUM_22, .speed=400*KHZ, .internal=true}
+	{.port=I2C_NUM_0, .sda=GPIO_NUM_23, .scl=GPIO_NUM_22, .speed=400*KHZ, .internal=true}, \
+	{.port=I2C_NUM_1, .sda=GPIO_NUM_26, .scl=GPIO_NUM_27, .speed=400*KHZ, .internal=false}
 
 #define HAL_ESP32_UART_DEVICES \
-    {.port=UART_NUM_0, .rx=GPIO_NUM_3 , .tx=GPIO_NUM_1 },\
-	{.port=UART_NUM_1, .rx=GPIO_NUM_21 , .tx=GPIO_NUM_19 }
+    {.port=UART_NUM_0, .rx=GPIO_NUM_3, .tx=GPIO_NUM_1 },\
+	{.port=UART_NUM_1, .rx=GPIO_NUM_21, .tx=GPIO_NUM_19 }
 
 
 

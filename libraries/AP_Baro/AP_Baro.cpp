@@ -598,6 +598,10 @@ void AP_Baro::init(void)
 #elif HAL_BARO_DEFAULT == HAL_BARO_ANALOG
 	ADD_BACKEND(AP_Baro_Analog::probe(*this,
 									  HAL_BARO_ANALOG_PIN));
+#elif HAL_BARO_DEFAULT == HAL_BARO_MS5837_I2c
+	ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
+                                          std::move(hal.i2c_mgr->get_device(_ext_bus, HAL_BARO_MS5837_I2C_ADDR)), AP_Baro_MS56XX::BARO_MS5837));
+
 #endif
 
     // can optionally have baro on I2C too
