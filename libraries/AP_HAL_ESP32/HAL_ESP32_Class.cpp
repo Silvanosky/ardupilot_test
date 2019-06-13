@@ -31,6 +31,9 @@
 #include "AnalogIn.h"
 #include "Util.h"
 
+#define HAL_ESP32_WIFI 1
+#define HAL_ESP32_NO_MAVLINK_0
+
 #ifdef HAL_ESP32_NO_MAVLINK_0
 static Empty::UARTDriver uartADriver;
 static ESP32::UARTDriver cons(0);
@@ -50,7 +53,7 @@ static Empty::UARTDriver uartFDriver;
 static Empty::UARTDriver uartGDriver;
 static ESP32::I2CDeviceManager i2cDeviceManager;
 static ESP32::SPIDeviceManager spiDeviceManager;
-static ESP32::AnalogIn analogIn;
+static Empty::AnalogIn analogIn;
 static ESP32::Storage storageDriver;
 static Empty::GPIO gpioDriver;
 static ESP32::RCOutput rcoutDriver;
