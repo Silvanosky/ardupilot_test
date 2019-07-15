@@ -31,23 +31,11 @@
 #include "AnalogIn.h"
 #include "Util.h"
 
-#define HAL_ESP32_WIFI 1
-#define HAL_ESP32_NO_MAVLINK_0
-
-#ifdef HAL_ESP32_NO_MAVLINK_0
-static Empty::UARTDriver uartADriver;
 static ESP32::UARTDriver cons(0);
-#else
-static ESP32::UARTDriver uartADriver(0);
-#define cons uartADriver
-#endif
+static ESP32::UARTDriver uartADriver(1);
 static Empty::UARTDriver uartBDriver;
-#ifdef HAL_ESP32_WIFI
 static ESP32::WiFiDriver uartCDriver;
-#else
-static Empty::UARTDriver uartCDriver;
-#endif
-static ESP32::UARTDriver uartDDriver(1);
+static Empty::UARTDriver uartDDriver;
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;
 static Empty::UARTDriver uartGDriver;

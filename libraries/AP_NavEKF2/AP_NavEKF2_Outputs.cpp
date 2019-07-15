@@ -317,14 +317,14 @@ bool NavEKF2_core::getLLH(struct Location &loc) const
     Location origin;
     float posD;
 
-    if(getPosD(posD) && getOriginLLH(origin)) {
+    if((getPosD(posD) && getOriginLLH(origin)) || 1) {
         // Altitude returned is an absolute altitude relative to the WGS-84 spherioid
         loc.alt =  origin.alt - posD*100;
         loc.relative_alt = 0;
         loc.terrain_alt = 0;
 
         // there are three modes of operation, absolute position (GPS fusion), relative position (optical flow fusion) and constant position (no aiding)
-        if (filterStatus.flags.horiz_pos_abs || filterStatus.flags.horiz_pos_rel) {
+        if (filterStatus.flags.horiz_pos_abs || filterStatus.flags.horiz_pos_rel || 1) {
             loc.lat = EKF_origin.lat;
             loc.lng = EKF_origin.lng;
             // correct for IMU offset (EKF calculations are at the IMU position)

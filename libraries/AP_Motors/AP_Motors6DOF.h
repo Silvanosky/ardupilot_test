@@ -8,6 +8,8 @@
 #include <RC_Channel/RC_Channel.h>     // RC Channel Library
 #include "AP_MotorsMatrix.h"
 
+#include <atomic>
+
 /// @class      AP_MotorsMatrix
 class AP_Motors6DOF : public AP_MotorsMatrix {
 public:
@@ -29,6 +31,24 @@ public:
         SUB_FRAME_CUSTOM
     } sub_frame_t;
 
+	typedef struct {
+		AP_Int8 reversed;
+		AP_Int16 pwm_min;
+		AP_Int16 pwm_max;
+		AP_Int16 pwm_neutral;
+		AP_Int16 pwm_dz;
+		AP_Float boost_time;
+		AP_Int16 pwm_boost;
+
+
+
+	} sub_motor_info_t;
+
+	typedef struct {
+		uint64_t start_boost;
+		int16_t last_pwm;
+	} sub_motor_data_t;
+
     // Override parent
     void setup_motors(motor_frame_class frame_class, motor_frame_type frame_type) override;
 
@@ -36,7 +56,7 @@ public:
     void output_min() override;
 
     // Map thrust input -1~1 to pwm output 1100~1900
-    int16_t calc_thrust_to_pwm(float thrust_in) const;
+    int16_t calc_thrust_to_pwm(int8_t motor, float thrust_in);
 
     // output_to_motors - sends minimum values out to the motors
     void output_to_motors() override;
@@ -56,7 +76,10 @@ protected:
     void output_armed_stabilizing_vectored_6dof();
 
     // Parameters
-    AP_Int8             _motor_reverse[AP_MOTORS_MAX_NUM_MOTORS];
+    //AP_Int8             _motor_reverse[AP_MOTORS_MAX_NUM_MOTORS];
+	sub_motor_info_t	_motor_infos[AP_MOTORS_MAX_NUM_MOTORS];
+	sub_motor_data_t	_motor_data[AP_MOTORS_MAX_NUM_MOTORS];
+
     AP_Float            _forwardVerticalCouplingFactor;
 
     float               _throttle_factor[AP_MOTORS_MAX_NUM_MOTORS]; // each motors contribution to throttle (climb/descent)

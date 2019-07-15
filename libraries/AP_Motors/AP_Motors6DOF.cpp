@@ -26,61 +26,255 @@ extern const AP_HAL::HAL& hal;
 // parameters for the motor class
 const AP_Param::GroupInfo AP_Motors6DOF::var_info[] = {
     AP_NESTEDGROUPINFO(AP_MotorsMulticopter, 0),
+
     // @Param: 1_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("1_DIRECTION", 1, AP_Motors6DOF, _motor_reverse[0], 1),
+    AP_GROUPINFO("1_DIRECTION", 1, AP_Motors6DOF, _motor_infos[0].reversed, 1),
+
+	// @Param: 1_PWM_MIN
+    // @DisplayName: Motor minimal PWM
+    // @Description: Used to change minimal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("1_PWM_MIN", 2, AP_Motors6DOF, _motor_infos[0].pwm_min, 1100),
+
+	// @Param: 1_PWM_MAX
+    // @DisplayName: Motor maximal PWM
+    // @Description: Used to set maximal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("1_PWM_MAX", 3, AP_Motors6DOF, _motor_infos[0].pwm_max, 1900),
+
+	// @Param: 1_PWM_NEUTRAL
+    // @DisplayName: Motor neutral PWM
+    // @Description: Used to set neutral PWM value
+    // @Values: 1500:default
+    // @User: Standard
+    AP_GROUPINFO("1_PWM_ZERO", 4, AP_Motors6DOF, _motor_infos[0].pwm_neutral, 1500),
+
+	// @Param: 1_PWM_DZ
+    // @DisplayName: Motor deadzone pwm
+    // @Description: Used to indicate where the deadzone PWM value doesn't change
+    // @Values: 0:default
+    // @User: Standard
+    AP_GROUPINFO("1_PWM_DZ", 5, AP_Motors6DOF, _motor_infos[0].pwm_dz, 0),
+
+	// @Param: 1_PWM_BOOST_TIME
+    // @DisplayName: Motor boost time
+    // @Description: Time during which the motors is boosted when leaving deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("1_PWM_BSTIM", 6, AP_Motors6DOF, _motor_infos[0].boost_time, 0.0),
+
+	// @Param: 1_PWM_BOOST
+    // @DisplayName: Motor boost
+    // @Description: Amount will be signed corresponding to the direction and added to neutral
+	// during the boost time every time the order leave the deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("1_PWM_BOOST", 7, AP_Motors6DOF, _motor_infos[0].pwm_boost, 0),
 
     // @Param: 2_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("2_DIRECTION", 2, AP_Motors6DOF, _motor_reverse[1], 1),
+    AP_GROUPINFO("2_DIRECTION", 8, AP_Motors6DOF, _motor_infos[1].reversed, 1),
+
+	// @Param: 2_PWM_MIN
+    // @DisplayName: Motor minimal PWM
+    // @Description: Used to change minimal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("2_PWM_MIN", 9, AP_Motors6DOF, _motor_infos[1].pwm_min, 1100),
+
+	// @Param: 2_PWM_MAX
+    // @DisplayName: Motor maximal PWM
+    // @Description: Used to set maximal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("2_PWM_MAX", 10, AP_Motors6DOF, _motor_infos[1].pwm_max, 1900),
+
+	// @Param: 2_PWM_NEUTRAL
+    // @DisplayName: Motor neutral PWM
+    // @Description: Used to set neutral PWM value
+    // @Values: 1500:default
+    // @User: Standard
+    AP_GROUPINFO("2_PWM_ZERO", 11, AP_Motors6DOF, _motor_infos[1].pwm_neutral, 1500),
+
+	// @Param: 2_PWM_DZ
+    // @DisplayName: Motor deadzone pwm
+    // @Description: Used to set neutral PWM value
+    // @Values: 0:default
+    // @User: Standard
+    AP_GROUPINFO("2_PWM_DZ", 12, AP_Motors6DOF, _motor_infos[1].pwm_dz, 0),
+
+	// @Param: 2_PWM_BOOST_TIME
+    // @DisplayName: Motor boost time
+    // @Description: Time during which the motors is boosted when leaving deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("2_PWM_BSTIM", 13, AP_Motors6DOF, _motor_infos[1].boost_time, 0.0),
+
+	// @Param: 2_PWM_BOOST
+    // @DisplayName: Motor boost
+    // @Description: Amount will be signed corresponding to the direction and added to neutral
+	// during the boost time every time the order leave the deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("2_PWM_BOOST", 14, AP_Motors6DOF, _motor_infos[1].pwm_boost, 0),
 
     // @Param: 3_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("3_DIRECTION", 3, AP_Motors6DOF, _motor_reverse[2], 1),
+    AP_GROUPINFO("3_DIRECTION", 15, AP_Motors6DOF, _motor_infos[2].reversed, 1),
+
+	// @Param: 3_PWM_MIN
+    // @DisplayName: Motor minimal PWM
+    // @Description: Used to change minimal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("3_PWM_MIN", 16, AP_Motors6DOF, _motor_infos[2].pwm_min, 1100),
+
+	// @Param: 2_PWM_MAX
+    // @DisplayName: Motor maximal PWM
+    // @Description: Used to set maximal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("3_PWM_MAX", 17, AP_Motors6DOF, _motor_infos[2].pwm_max, 1900),
+
+	// @Param: 3_PWM_NEUTRAL
+    // @DisplayName: Motor neutral PWM
+    // @Description: Used to set neutral PWM value
+    // @Values: 1500:default
+    // @User: Standard
+    AP_GROUPINFO("3_PWM_ZERO", 18, AP_Motors6DOF, _motor_infos[2].pwm_neutral, 1500),
+
+	// @Param: 3_PWM_DZ
+    // @DisplayName: Motor deadzone pwm
+    // @Description: Used to set neutral PWM value
+    // @Values: 0:default
+    // @User: Standard
+    AP_GROUPINFO("3_PWM_DZ", 19, AP_Motors6DOF, _motor_infos[2].pwm_dz, 0),
+
+	// @Param: 3_PWM_BOOST_TIME
+    // @DisplayName: Motor boost time
+    // @Description: Time during which the motors is boosted when leaving deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("3_PWM_BSTIM", 20, AP_Motors6DOF, _motor_infos[2].boost_time, 0.0),
+
+	// @Param: 3_PWM_BOOST
+    // @DisplayName: Motor boost
+    // @Description: Amount will be signed corresponding to the direction and added to neutral
+	// during the boost time every time the order leave the deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("3_PWM_BOOST", 21, AP_Motors6DOF, _motor_infos[2].pwm_boost, 0),
 
     // @Param: 4_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("4_DIRECTION", 4, AP_Motors6DOF, _motor_reverse[3], 1),
+    AP_GROUPINFO("4_DIRECTION", 22, AP_Motors6DOF, _motor_infos[3].reversed, 1),
+
+	// @Param: 4_PWM_MIN
+    // @DisplayName: Motor minimal PWM
+    // @Description: Used to change minimal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("4_PWM_MIN", 23, AP_Motors6DOF, _motor_infos[3].pwm_min, 1100),
+
+	// @Param: 4_PWM_MAX
+    // @DisplayName: Motor maximal PWM
+    // @Description: Used to set maximal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("4_PWM_MAX", 24, AP_Motors6DOF, _motor_infos[3].pwm_max, 1900),
+
+	// @Param: 4_PWM_NEUTRAL
+    // @DisplayName: Motor neutral PWM
+    // @Description: Used to set neutral PWM value
+    // @Values: 1500:default
+    // @User: Standard
+    AP_GROUPINFO("4_PWM_ZERO", 25, AP_Motors6DOF, _motor_infos[3].pwm_neutral, 1500),
+
+	// @Param: 4_PWM_DZ
+    // @DisplayName: Motor deadzone pwm
+    // @Description: Used to set neutral PWM value
+    // @Values: 0:default
+    // @User: Standard
+    AP_GROUPINFO("4_PWM_DZ", 26, AP_Motors6DOF, _motor_infos[3].pwm_dz, 0),
+
+	// @Param: 4_PWM_BOOST_TIME
+    // @DisplayName: Motor boost time
+    // @Description: Time during which the motors is boosted when leaving deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("4_PWM_BSTIM", 27, AP_Motors6DOF, _motor_infos[3].boost_time, 0.0),
+
+	// @Param: 1_PWM_BOOST
+    // @DisplayName: Motor boost
+    // @Description: Amount will be signed corresponding to the direction and added to neutral
+	// during the boost time every time the order leave the deadzone
+    // @Values: 0.0:default
+    // @User: Standard
+    AP_GROUPINFO("4_PWM_BOOST", 28, AP_Motors6DOF, _motor_infos[3].pwm_boost, 0),
 
     // @Param: 5_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("5_DIRECTION", 5, AP_Motors6DOF, _motor_reverse[4], 1),
+    AP_GROUPINFO("5_DIRECTION", 29, AP_Motors6DOF, _motor_infos[4].reversed, 1),
+
+	// @Param: 5_PWM_MIN
+    // @DisplayName: Motor minimal PWM
+    // @Description: Used to change minimal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("5_PWM_MIN", 30, AP_Motors6DOF, _motor_infos[4].pwm_min, 1100),
+
+	// @Param: 5_PWM_MAX
+    // @DisplayName: Motor maximal PWM
+    // @Description: Used to set maximal PWM value
+    // @Values: 800:min,2000:max
+    // @User: Standard
+    AP_GROUPINFO("5_PWM_MAX", 31, AP_Motors6DOF, _motor_infos[4].pwm_max, 1900),
+
+	// @Param: 5_PWM_NEUTRAL
+    // @DisplayName: Motor neutral PWM
+    // @Description: Used to set neutral PWM value
+    // @Values: 1500:default
+    // @User: Standard
+    AP_GROUPINFO("5_PWM_ZERO", 32, AP_Motors6DOF, _motor_infos[4].pwm_neutral, 1500),
 
     // @Param: 6_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("6_DIRECTION", 6, AP_Motors6DOF, _motor_reverse[5], 1),
+    AP_GROUPINFO("6_DIRECTION", 36, AP_Motors6DOF, _motor_infos[5].reversed, 1),
 
     // @Param: 7_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("7_DIRECTION", 7, AP_Motors6DOF, _motor_reverse[6], 1),
+    AP_GROUPINFO("7_DIRECTION", 37, AP_Motors6DOF, _motor_infos[6].reversed, 1),
 
     // @Param: 8_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("8_DIRECTION", 8, AP_Motors6DOF, _motor_reverse[7], 1),
+    AP_GROUPINFO("8_DIRECTION", 38, AP_Motors6DOF, _motor_infos[7].reversed, 1),
 
     // @Param: FV_CPLNG_K
     // @DisplayName: Forward/vertical to pitch decoupling factor
@@ -88,35 +282,35 @@ const AP_Param::GroupInfo AP_Motors6DOF::var_info[] = {
     // @Range: 0.0 1.5
     // @Increment: 0.1
     // @User: Standard
-    AP_GROUPINFO("FV_CPLNG_K", 9, AP_Motors6DOF, _forwardVerticalCouplingFactor, 1.0),
+    AP_GROUPINFO("FV_CPLNG_K", 39, AP_Motors6DOF, _forwardVerticalCouplingFactor, 1.0),
 
     // @Param: 9_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("9_DIRECTION", 10, AP_Motors6DOF, _motor_reverse[8], 1),
+    AP_GROUPINFO("9_DIRECTION", 40, AP_Motors6DOF, _motor_infos[8].reversed, 1),
 
     // @Param: 10_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("10_DIRECTION", 11, AP_Motors6DOF, _motor_reverse[9], 1),
+    AP_GROUPINFO("10_DIRECTION", 41, AP_Motors6DOF, _motor_infos[9].reversed, 1),
 
     // @Param: 11_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("11_DIRECTION", 12, AP_Motors6DOF, _motor_reverse[10], 1),
+    AP_GROUPINFO("11_DIRECTION", 42, AP_Motors6DOF, _motor_infos[10].reversed, 1),
 
     // @Param: 12_DIRECTION
     // @DisplayName: Motor normal or reverse
     // @Description: Used to change motor rotation directions without changing wires
     // @Values: 1:normal,-1:reverse
     // @User: Standard
-    AP_GROUPINFO("12_DIRECTION", 13, AP_Motors6DOF, _motor_reverse[11], 1),
+    AP_GROUPINFO("12_DIRECTION", 43, AP_Motors6DOF, _motor_infos[11].reversed, 1),
 
     AP_GROUPEND
 };
@@ -197,6 +391,8 @@ void AP_Motors6DOF::add_motor_raw_6dof(int8_t motor_num, float roll_fac, float p
     _throttle_factor[motor_num] = throttle_fac;
     _forward_factor[motor_num] = forward_fac;
     _lateral_factor[motor_num] = lat_fac;
+	_motor_data[motor_num].start_boost = 0;
+	_motor_data[motor_num].last_pwm = _motor_infos[motor_num].pwm_neutral;
 }
 
 // output_min - sends minimum values out to the motors
@@ -214,14 +410,34 @@ void AP_Motors6DOF::output_min()
     // ToDo find a field to store the minimum pwm instead of hard coding 1500
     for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
         if (motor_enabled[i]) {
-            rc_write(i, 1500);
+            rc_write(i, _motor_infos[i].pwm_neutral);
         }
     }
 }
 
-int16_t AP_Motors6DOF::calc_thrust_to_pwm(float thrust_in) const
+int16_t AP_Motors6DOF::calc_thrust_to_pwm(int8_t motor, float thrust_in)
 {
-    return constrain_int16(1500 + thrust_in * 400, _throttle_radio_min, _throttle_radio_max);
+    int16_t pwm = constrain_int16(_motor_infos[motor].pwm_neutral + thrust_in * 400, _motor_infos[motor].pwm_min, _motor_infos[motor].pwm_max);
+
+	//No boost so don't bother
+	if (_motor_infos[motor].pwm_boost == 0)
+		return pwm;
+
+	int16_t dpwm = pwm - _motor_infos[motor].pwm_neutral;
+	int16_t sign = (dpwm < 0) ? -1 : 1;
+
+	if (_motor_data[motor].start_boost > hal.util->get_hw_rtc()) {
+
+		dpwm = _motor_infos[motor].pwm_boost * sign;
+
+	} else if (abs(_motor_data[motor].last_pwm) < _motor_infos[motor].pwm_dz
+		&& abs(dpwm) > _motor_infos[motor].pwm_dz) {
+		_motor_data[motor].start_boost = hal.util->get_hw_rtc() + _motor_infos[motor].boost_time * 1000000ULL;
+		dpwm = _motor_infos[motor].pwm_boost * sign;
+	}
+
+	_motor_data[motor].last_pwm = dpwm;
+	return dpwm + _motor_infos[motor].pwm_neutral;
 }
 
 void AP_Motors6DOF::output_to_motors()
@@ -235,7 +451,7 @@ void AP_Motors6DOF::output_to_motors()
         // set motor output based on thrust requests
         for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
             if (motor_enabled[i]) {
-                motor_out[i] = 1500;
+                motor_out[i] = _motor_infos[i].pwm_neutral;
             }
         }
         break;
@@ -243,7 +459,7 @@ void AP_Motors6DOF::output_to_motors()
         // sends output to motors when armed but not flying
         for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
             if (motor_enabled[i]) {
-                motor_out[i] = 1500;
+                motor_out[i] = _motor_infos[i].pwm_neutral;
             }
         }
         break;
@@ -253,7 +469,7 @@ void AP_Motors6DOF::output_to_motors()
         // set motor output based on thrust requests
         for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
             if (motor_enabled[i]) {
-                motor_out[i] = calc_thrust_to_pwm(_thrust_rpyt_out[i]);
+                motor_out[i] = calc_thrust_to_pwm(i, _thrust_rpyt_out[i]);
             }
         }
         break;
@@ -340,7 +556,7 @@ void AP_Motors6DOF::output_armed_stabilizing()
         // Calculate final output for each motor
         for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
             if (motor_enabled[i]) {
-                _thrust_rpyt_out[i] = constrain_float(_motor_reverse[i]*(rpy_out[i] + linear_out[i]),-1.0f,1.0f);
+                _thrust_rpyt_out[i] = constrain_float(_motor_infos[i].reversed*(rpy_out[i] + linear_out[i]),-1.0f,1.0f);
             }
         }
     }
@@ -464,7 +680,7 @@ void AP_Motors6DOF::output_armed_stabilizing_vectored()
     // Calculate final output for each motor
     for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
         if (motor_enabled[i]) {
-            _thrust_rpyt_out[i] = constrain_float(_motor_reverse[i]*(rpy_out[i] + linear_out[i]), -1.0f, 1.0f);
+            _thrust_rpyt_out[i] = constrain_float(_motor_infos[i].reversed*(rpy_out[i] + linear_out[i]), -1.0f, 1.0f);
         }
     }
 }
@@ -540,7 +756,7 @@ void AP_Motors6DOF::output_armed_stabilizing_vectored_6dof()
     // Calculate final output for each motor and normalize if necessary
     for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
         if (motor_enabled[i]) {
-            _thrust_rpyt_out[i] = constrain_float(_motor_reverse[i]*(rpt_out[i]/rpt_max + yfl_out[i]/yfl_max),-1.0f,1.0f);
+            _thrust_rpyt_out[i] = constrain_float(_motor_infos[i].reversed*(rpt_out[i]/rpt_max + yfl_out[i]/yfl_max),-1.0f,1.0f);
         }
     }
 }

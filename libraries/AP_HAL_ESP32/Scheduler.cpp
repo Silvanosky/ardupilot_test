@@ -43,6 +43,7 @@ void Scheduler::init()
     xTaskCreate(_uart_thread, "APM_UART", UART_SS, this, UART_PRIO, &_uart_task_handle);
     xTaskCreate(_io_thread, "APM_IO", IO_SS, this, IO_PRIO, &_io_task_handle);
     //xTaskCreate(test_esc, "APM_TEST", IO_SS, this, IO_PRIO, nullptr);
+    xTaskCreate(set_position, "APM_POS", IO_SS, this, IO_PRIO, nullptr);
     xTaskCreate(_storage_thread, "APM_STORAGE", STORAGE_SS, this, STORAGE_PRIO, &_storage_task_handle);
 //    xTaskCreate(_print_profile, "APM_PROFILE", IO_SS, this, IO_PRIO, nullptr);
 }
@@ -368,11 +369,39 @@ void print_stats()
     }
 }
 
+#include <AP_AHRS/AP_AHRS.h>
+void Scheduler::set_position(void* arg)
+{
+    Scheduler *sched = (Scheduler *)arg;
+	while(!_initialized)
+	{
+        sched->delay_microseconds(1000);
+	}
+	sched->delay_microseconds(1000);
+
+
+    AP_AHRS &ahrs = AP::ahrs();
+	Location ekf_origin {};
+    ekf_origin.lat = 0.0000001;
+    ekf_origin.lng = 0.0000001;
+    ekf_origin.alt = 0.1;
+
+    if (ahrs.set_origin(ekf_origin)) {
+		printf("Set ekf origin");
+	}
+
+	while (true)
+	{
+        sched->delay_microseconds(100000);
+	}
+}
+
+
 void Scheduler::_main_thread(void *arg)
 {
     Scheduler *sched = (Scheduler *)arg;
-    hal.uartA->begin(115200);
-    hal.uartB->begin(38400);
+    hal.uartA->begin(57600);
+    hal.uartB->begin(57600);
     //hal.uartC->begin(57600);
     hal.uartC->begin(921600);
     hal.analogin->init();
@@ -381,6 +410,7 @@ void Scheduler::_main_thread(void *arg)
     sched->callbacks->setup();
     hal.rcout->init();
     sched->system_initialized();
+
 
     while (true) {
         sched->callbacks->loop();

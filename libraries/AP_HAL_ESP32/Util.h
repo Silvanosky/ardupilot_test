@@ -18,6 +18,8 @@
 #include <AP_HAL/AP_HAL.h>
 #include "HAL_ESP32_Namespace.h"
 
+#include <esp_timer.h>
+
 //see components/heap/include/esp_heas_cap.h
 
 class ESP32::Util : public AP_HAL::Util {
@@ -32,4 +34,10 @@ public:
     {
         return heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
     }
+
+
+    uint64_t get_hw_rtc() const override
+	{
+		return esp_timer_get_time();
+	}
 };

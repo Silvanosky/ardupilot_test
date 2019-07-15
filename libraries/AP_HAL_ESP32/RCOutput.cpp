@@ -140,7 +140,7 @@ uint16_t RCOutput::read(uint8_t ch)
     }
     uint32_t freq = ledc_get_freq(LEDC_HIGH_SPEED_MODE, _channel_timers[ch]);
     uint32_t duty = ledc_get_duty(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)ch);
-    return (uint64_t(duty) * 1000000)/(freq * (1<< duty_resolution));
+    return (uint64_t(duty) * 1000000U)/(freq * (1U<< duty_resolution));
 
 }
 
@@ -176,7 +176,8 @@ void RCOutput::write_int(uint8_t ch, uint16_t period_us)
         return;
     }
     uint32_t freq = ledc_get_freq(LEDC_HIGH_SPEED_MODE, _channel_timers[ch]);
-    uint32_t duty = (uint64_t(period_us) * freq * (1<< duty_resolution))/1000000;
+
+    uint32_t duty = (uint64_t(period_us) * freq * (1U<< duty_resolution))/1000000U;
     ledc_set_duty(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)ch, duty);
     ledc_update_duty(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)ch);
 }
