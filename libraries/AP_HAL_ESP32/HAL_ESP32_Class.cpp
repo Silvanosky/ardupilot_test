@@ -32,9 +32,10 @@
 #include "Util.h"
 
 static ESP32::UARTDriver cons(0);
-static ESP32::UARTDriver uartADriver(1);
+static Empty::UARTDriver uartADriver;
 static Empty::UARTDriver uartBDriver;
 static ESP32::WiFiDriver uartCDriver;
+//static Empty::UARTDriver uartCDriver;
 static Empty::UARTDriver uartDDriver;
 static Empty::UARTDriver uartEDriver;
 static Empty::UARTDriver uartFDriver;

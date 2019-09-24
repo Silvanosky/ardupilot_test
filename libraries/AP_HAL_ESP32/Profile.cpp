@@ -66,7 +66,7 @@ void print_profile()
             for (size_t i=0; i < ARRAY_SIZE(ht); i++) {
                 for (FI *current = ht[i]; current != nullptr; current = current->next) {
                     if (current->count != 0) {
-                        fprintf(f, "0x%016x 0x%x\n", current->address , current->count);
+                        printf("0x%016x 0x%x\n", current->address , current->count);
                         current->count = 0;
                     }
                 }

@@ -88,13 +88,13 @@ void Sub::failsafe_sensors_check()
     gcs().send_text(MAV_SEVERITY_CRITICAL, "Depth sensor error!");
     AP::logger().Write_Error(LogErrorSubsystem::FAILSAFE_SENSORS, LogErrorCode::BAD_DEPTH);
 
-    if (control_mode == ALT_HOLD || control_mode == SURFACE || mode_requires_GPS(control_mode)) {
+    /*if (control_mode == ALT_HOLD || control_mode == SURFACE || mode_requires_GPS(control_mode)) {
         // This should always succeed
         if (!set_mode(MANUAL, MODE_REASON_BAD_DEPTH)) {
             // We should never get here
             init_disarm_motors();
         }
-    }
+    }*/
 }
 
 void Sub::failsafe_ekf_check()
